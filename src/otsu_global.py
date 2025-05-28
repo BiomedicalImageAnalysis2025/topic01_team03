@@ -37,22 +37,22 @@ def binarize(arr: np.ndarray, t: int) -> np.ndarray:
     return arr > t
 
 if __name__ == "__main__":
-    # 1. Bild laden und in Graustufen konvertieren
+    # Bild laden und in Graustufen konvertieren
     img_path = Path("data-git/N2DH-GOWT1/gt/man_seg01.tif")
     img = Image.open(str(img_path)).convert("L")
     arr = np.array(img)
 
-    # 2. Histogramm + Bin-Ränder aus src.gray_hist
+    # Histogramm + Bin-Ränder aus src.gray_hist
     hist, bin_edges = compute_gray_histogram(img_path)
 
-    # 3. Wahrscheinlichkeiten p[k] = hist[k] / N
+    # Wahrscheinlichkeiten p[k] = hist[k] / N
     p = hist / hist.sum()
 
-    # 4. Otsu-Schwellenwert bestimmen
+    # Otsu-Schwellenwert bestimmen
     t = otsu_threshold(p)
     print(f"Optimaler Otsu-Schwellenwert: {t}")
 
-    # 5. Binarisieren und anzeigen
+    # Binarisieren und anzeigen
     binary = binarize(arr, t)
     plt.figure(figsize=(6,6))
     plt.imshow(binary, cmap='gray')
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     plt.axis('off')
     plt.show()
 
-    # 6. Histogramm plotten (aus src.gray_hist) und Markierung t
+    # Histogramm plotten (aus src.gray_hist) und Markierung t
     plot_gray_histogram(hist, bin_edges)
     plt.axvline(bin_edges[t], color='r', linestyle='--', label=f"t={bin_edges[t]:.0f}")
     plt.legend()
