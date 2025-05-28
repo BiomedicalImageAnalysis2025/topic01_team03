@@ -13,41 +13,38 @@ from pathlib import Path
 from src.gray_hist import compute_gray_histogram, plot_gray_histogram
 from src.otsu_global import otsu_threshold, binarize
 
-# ————————————————————————————————————————————————————————
-# 1. Bild einlesen und skalieren (0–1)
+# Bild einlesen und skalieren (0–1)
 image_path = Path("data-git/N2DH-GOWT1/img/t01.tif")
 img = imread(str(image_path)).astype(float)
 img /= img.max()
 
-# 2. Gamma–Korrektur
+# Gamma–Korrektur
 mean_brightness = img.mean()
 gamma = 3 if mean_brightness >= 0.5 else 0.5
 img_gamma = img ** gamma
 
-# ————————————————————————————————————————————————————————
-# 3. Histogramm des ORIGINALBILDES (optional, zur Vergleich)
+
+# Histogramm des ORIGINALBILDES (optional, zur Vergleich)
 orig_hist, orig_edges = compute_gray_histogram(image_path)
 plt.figure(figsize=(8,4))
 plot_gray_histogram(orig_hist, orig_edges)
 plt.title("Histogramm des Originalbildes")
 
-# ————————————————————————————————————————————————————————
-# 4. Histogramm der vorverarbeiteten Version für Otsu
+#Histogramm der vorverarbeiteten Version für Otsu
 #    Wir erstellen hier das Histogramm manuell, da compute_gray_histogram
 #    direkt von einem Dateipfad liest.
 pixels = (img_gamma * 255).clip(0,255).astype(np.uint8).ravel()
 hist_pre, edges_pre = np.histogram(pixels, bins=256, range=(0,256))
 p_pre = hist_pre / hist_pre.sum()
 
-# 5. Otsu-Schwellenwert bestimmen
+# Otsu-Schwellenwert bestimmen
 t = otsu_threshold(p_pre)
 print(f"Gefundener Otsu-Threshold: {t} (Grauwert {edges_pre[t]})")
 
-# 6. Binarisierung
+# Binarisierung
 binary = binarize((img_gamma * 255).astype(np.uint8), t)
 
-# ————————————————————————————————————————————————————————
-# 7. Visualisierung
+# Visualisierung
 fig, axes = plt.subplots(1, 4, figsize=(16,4))
 
 axes[0].imshow(img, cmap="gray")
