@@ -4,40 +4,55 @@ import numpy as np
 from matplotlib import pyplot as plt
 from PIL import Image
 from pathlib import Path
+from typing import Union, Tuple
 
-def compute_gray_histogram(image_path: Path, bins: int = 256, value_range=(0, 255)):
+def compute_gray_histogram(
+    image_source: Union[Path, str, np.ndarray],
+    bins: int = 256,
+    value_range: Tuple[int, int] = (0, 255)
+) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Liest ein Bild ein, wandelt es in Graustufen um und berechnet das Histogramm.
+    Liest ein Bild ein (Pfad oder NumPy-Array), wandelt in Graustufen um und
+    berechnet das Histogramm.
+
+    Args:
+        image_source: Pfad (Path/str) zum Bild ODER ein 2D-NumPy-Array mit Grauwerten.
+        bins: Anzahl der Bins für das Histogramm.
+        value_range: Wertebereich (min, max).
+
+    Returns:
+        hist: Array der Pixelhäufigkeiten pro Bin.
+        bin_edges: Randwerte der Bins.
     """
-    img = Image.open(str(image_path)).convert("L")
-    arr = np.array(img)
-    hist, bin_edges = np.histogram(arr.ravel(), bins=bins, range=value_range)
+    # 1) Input erkennen und in Grauwert-Array umwandeln
+    if isinstance(image_source, (Path, str)):
+        img = Image.open(str(image_source)).convert("L")
+        arr = np.array(img)
+    elif isinstance(image_source, np.ndarray):
+        arr = image_source
+    else:
+        raise TypeError(
+            "compute_gray_histogram erwartet einen Pfad (Path/str) oder ein NumPy-Array."
+        )
+
+    # 2) Histogramm berechnen
+    hist, bin_edges = np.histogram(
+        arr.ravel(),
+        bins=bins,
+        range=value_range
+    )
     return hist, bin_edges
+
 
 def plot_gray_histogram(hist: np.ndarray, bin_edges: np.ndarray):
     """
     Plottet ein Grauwert-Histogramm anhand von hist und bin_edges.
     """
     plt.figure(figsize=(8, 4))
-    plt.bar(bin_edges[:-1], hist, width=bin_edges[1] - bin_edges[0])
-    plt.title("Grauwert-Histogramm")
-    plt.xlabel(f"Grauwert ({int(bin_edges[0])}–{int(bin_edges[-1])})")
-    plt.ylabel("Anzahl Pixel")
-    plt.xlim(bin_edges[0], bin_edges[-1])
-    plt.grid(axis="y", linestyle="--", linewidth=0.5)
-    plt.tight_layout()
-    plt.show()
-
-
-"""
-if __name__ == "__main__":
-    # Pfad zum Bild anpassen
-    img_path = Path("data-git/N2DH-GOWT1/gt/man_seg01.tif")
-    # Histogramm berechnen
-    hist_array, edges = compute_gray_histogram(img_path)
-    # Hier hast du das Histogramm-Array zur Weiterverarbeitung:
-    print("Histogramm-Array:", hist_array)
-    # Optional: plotten
-    plot_gray_histogram(hist_array, edges)
-
-    """
+    plt.bar(
+        bin_edges[:-1],
+        hist,
+        width=bin_edges[1] - bin_edges[0],
+        align='edge'
+    )
+    plt.t

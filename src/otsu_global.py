@@ -11,7 +11,7 @@ from PIL import Image
 from pathlib import Path
 
 # Histogramm‐Utilities aus src/gray_hist.py
-from gray_hist import compute_gray_histogram, plot_gray_histogram
+from src.gray_hist import compute_gray_histogram, plot_gray_histogram
 
 def otsu_threshold(p: np.ndarray) -> int:
     """
@@ -33,9 +33,30 @@ def otsu_threshold(p: np.ndarray) -> int:
     return t_opt
 
 def binarize(arr: np.ndarray, t: int) -> np.ndarray:
-    """Wendet den Schwellenwert t an und liefert ein Boolean-Array."""
-    return arr > t
+    """
+    Wendet den Schwellenwert t an und gibt
+    ein binäres (0/1)-Array zurück.
+    """
+    return (arr > t).astype(np.uint8)
 
+    """
+    Boolean:
+    Wendet den Schwellenwert t an und liefert ein Boolean-Array.
+    return arr > t
+    """
+
+def apply_global_otsu(image: np.ndarray) -> np.ndarray:
+    """
+    Vollständige Pipeline: Histogramm → Otsu → Binarisierung
+    Input: 2D-Grauwert-Array
+    Output: 2D-Binär-Array (0/1)
+    """
+    hist, _ = compute_gray_histogram(image)
+    p = hist / hist.sum()
+    t = otsu_threshold(p)
+    return binarize(image, t)
+
+"""
 if __name__ == "__main__":
     # Bild laden und in Graustufen konvertieren
     img_path = Path("data-git/N2DH-GOWT1/gt/man_seg01.tif")
@@ -65,3 +86,4 @@ if __name__ == "__main__":
     plt.axvline(bin_edges[t], color='r', linestyle='--', label=f"t={bin_edges[t]:.0f}")
     plt.legend()
     plt.show()
+"""
