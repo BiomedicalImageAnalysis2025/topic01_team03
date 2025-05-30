@@ -1,89 +1,106 @@
+#!/usr/bin/env python3
 """
 otsu_threshold.py
-Verwendet compute_gray_histogram aus src.gray_hist und behält
-die mathematischen Kommentare zur Otsu‐Implementierung bei.
+
+Modul für globalen Otsu-Schwellenwert:
+  - compute_gray_histogram aus src/gray_hist verwenden
+  - Funktionen:
+      * otsu_threshold(p): berechnet den optimalen Schwellenwert
+      * binarize(arr, t): wendet den Schwellenwert an
+      * apply_global_otsu(image): volle Pipeline (Histogramm → Threshold → Binarisierung)
+
+Im __main__-Block:
+  - Beispielbild laden
+  - Binarisierung anwenden
+  - Original- und Binärbild anzeigen und abspeichern
 """
 
-import math
+import os
+import sys
 import numpy as np
-from matplotlib import pyplot as plt
 from PIL import Image
-from pathlib import Path
+import matplotlib.pyplot as plt
 
-# Histogramm‐Utilities aus src/gray_hist.py
-from src.gray_hist import compute_gray_histogram, plot_gray_histogram
+# src-Verzeichnis zum Pfad hinzufügen
+project_root = os.path.dirname(os.path.abspath(__file__))
+src_dir = os.path.join(project_root, "src")
+if src_dir not in sys.path:
+    sys.path.insert(0, src_dir)
+
+from src.gray_hist import compute_gray_histogram
+# Optional zum Plotten im Modul: plot_gray_histogram
+# from src.gray_hist import plot_gray_histogram
 
 def otsu_threshold(p: np.ndarray) -> int:
     """
-    Berechnet Otsus globalen Schwellenwert basierend auf
-    Wahrscheinlichkeiten p[k] für k=0..255.
+    Berechnet den globalen Otsu-Schwellenwert aus Wahrscheinlichkeiten p[k].
     """
-    # kumulative Summen
-    P = np.cumsum(p)                     # P[i] = sum_{k=0}^i p[k]
-    bins = np.arange(256)
-    μ = np.cumsum(bins * p)              # μ[i] = sum_{k=0}^i k * p[k]
-    μ_T = μ[-1]                          # Gesamtmittel
+    P = np.cumsum(p)                    # kumulative Wahrscheinlichkeiten
+    bins = np.arange(len(p))            # mögliche Grauwert-Indizes
+    mu = np.cumsum(bins * p)            # kumuliertes gewichtetes Mittel
+    mu_T = mu[-1]                       # Gesamtmittel
+    # Interklassenvarianz mit Epsilon für Stabilität
+    sigma_b2 = (mu_T * P - mu)**2 / (P * (1 - P) + 1e-12)
+    return int(np.argmax(sigma_b2))
 
-    # Interklassen-Varianz σ_B²(i) = [μ_T * P[i] - μ[i]]² / [P[i]*(1-P[i])]
-    # Wir vermeiden Division durch 0, indem wir kleinen Epsilon‐Term hinzufügen.
-    σ_B2 = (μ_T * P - μ)**2 / (P * (1 - P) + 1e-12)
-
-    # besten Schwellenwert wählen
-    t_opt = np.argmax(σ_B2)
-    return t_opt
 
 def binarize(arr: np.ndarray, t: int) -> np.ndarray:
     """
-    Wendet den Schwellenwert t an und gibt
-    ein binäres (0/1)-Array zurück.
+    Wendet den Schwellenwert t an und gibt ein binäres 0/1-Array zurück.
     """
     return (arr > t).astype(np.uint8)
 
-    """
-    Boolean:
-    Wendet den Schwellenwert t an und liefert ein Boolean-Array.
-    return arr > t
-    """
 
 def apply_global_otsu(image: np.ndarray) -> np.ndarray:
     """
-    Vollständige Pipeline: Histogramm → Otsu → Binarisierung
-    Input: 2D-Grauwert-Array
-    Output: 2D-Binär-Array (0/1)
+    Vollständige Pipeline:
+    - Histogramm berechnen
+    - Wahrscheinlichkeiten p[k] bilden
+    - Otsu-Schwellenwert berechnen
+    - Binarisierung durchführen
+
+    Returns ein 2D-Binär-Array (0/1).
     """
     hist, _ = compute_gray_histogram(image)
     p = hist / hist.sum()
     t = otsu_threshold(p)
     return binarize(image, t)
 
-"""
+
 if __name__ == "__main__":
-    # Bild laden und in Graustufen konvertieren
-    img_path = Path("data-git/N2DH-GOWT1/gt/man_seg01.tif")
-    img = Image.open(str(img_path)).convert("L")
-    arr = np.array(img)
+    # Ausgabe-Ordner vorbereiten
+    output_dir = os.path.join(project_root, "output")
+    os.makedirs(output_dir, exist_ok=True)
 
-    # Histogramm + Bin-Ränder aus src.gray_hist
-    hist, bin_edges = compute_gray_histogram(img_path)
+    # Beispielbild laden und in Grauwert-Array umwandeln
+    img_path = os.path.join(project_root, "Data", "N2DH-GOWT1", "img", "t01.tif")
+    pil_img = Image.open(img_path).convert("L")
+    img_arr = np.array(pil_img)
 
-    # Wahrscheinlichkeiten p[k] = hist[k] / N
+    # Globalen Otsu anwenden
+    binary = apply_global_otsu(img_arr)
+
+    # Schwellenwert ermitteln (nur zur Anzeige)
+    hist, _ = compute_gray_histogram(img_arr)
     p = hist / hist.sum()
-
-    # Otsu-Schwellenwert bestimmen
     t = otsu_threshold(p)
-    print(f"Optimaler Otsu-Schwellenwert: {t}")
+    print(f"Berechneter Otsu-Schwellenwert: {t}")
 
-    # Binarisieren und anzeigen
-    binary = binarize(arr, t)
-    plt.figure(figsize=(6,6))
-    plt.imshow(binary, cmap='gray')
-    plt.title("Binärbild mit globalem Otsu-Threshold")
-    plt.axis('off')
-    plt.show()
+    # Binärbild (0/255) speichern
+    binary_uint8 = binary * 255
+    out_path = os.path.join(output_dir, "t01_binary.png")
+    Image.fromarray(binary_uint8).save(out_path)
+    print(f"Binärbild gespeichert unter: {out_path}")
 
-    # Histogramm plotten (aus src.gray_hist) und Markierung t
-    plot_gray_histogram(hist, bin_edges)
-    plt.axvline(bin_edges[t], color='r', linestyle='--', label=f"t={bin_edges[t]:.0f}")
-    plt.legend()
+    # Original- und Ergebnisbild anzeigen
+    plt.figure(figsize=(5,5))
+    plt.imshow(img_arr, cmap="gray")
+    plt.title("Original Grauwertbild")
+    plt.axis("off")
+
+    plt.figure(figsize=(5,5))
+    plt.imshow(binary, cmap="gray")
+    plt.title(f"Global Otsu Binärbild (t={t})")
+    plt.axis("off")
+
     plt.show()
-"""
