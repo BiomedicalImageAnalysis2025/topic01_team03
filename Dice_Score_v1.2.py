@@ -17,8 +17,8 @@ otsu_img = otsu   # output of otsu
 ground_truth = imread("data-git/N2DH-GOWT1/gt/man_seg01.tif", as_gray=True)
 otsu_gt = (ground_truth > 0).astype(int).flatten()  # gt binary & 1D
 
-print("otsu_gt:", len(otsu_gt))     # test how otsu_gt looks like
-print("otsu_img:", len(otsu_img))   # test hoe otsu_img looks like
+print("sum_gt:", len(otsu_gt))     # test how sum_gt looks like
+print("sum_img:", len(otsu_img))   # test how sum_img looks like
 
 def dice_score(otsu_img, otsu_gt):
 
