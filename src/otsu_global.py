@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 otsu_threshold.py
 
