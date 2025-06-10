@@ -28,6 +28,7 @@ if src_dir not in sys.path:
     sys.path.insert(0, src_dir)
 
 from src.gray_hist import compute_gray_histogram
+
 # Optional zum Plotten im Modul: plot_gray_histogram
 # from src.gray_hist import plot_gray_histogram
 
@@ -104,3 +105,4 @@ if __name__ == "__main__":
     plt.axis("off")
 
     plt.show()
+
