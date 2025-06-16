@@ -12,6 +12,9 @@ otsu = image > otsu_threshold  # TRUE FALSE Picture
 from skimage.io import imread
 
 
+
+
+
 otsu_img = otsu   # output of otsu
 
 ground_truth = imread("data-git/N2DH-GOWT1/gt/man_seg01.tif", as_gray=True)
