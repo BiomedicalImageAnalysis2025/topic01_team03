@@ -1,16 +1,14 @@
 import numpy as np
 from skimage.io import imread
 from skimage.filters import threshold_otsu  # otsu-global pakage
+import time
 
+start = time.time()
 
 # skimage Otsu-Global
 image = imread("data-git/N2DH-GOWT1/img/t01.tif", as_gray=True)
 otsu_threshold = threshold_otsu(image)
 otsu = (image > otsu_threshold).astype(int).flatten()  # binary & 1D
-
-# start of Dice Score code
-from skimage.io import imread
-
 
 otsu_img = otsu   # output of otsu
 
@@ -34,3 +32,7 @@ def dice_score(otsu_img, otsu_gt):
     return 2 * positive_overlap / (sum_img + sum_gt)
 
 print("Dice Score:", dice_score(otsu_img, otsu_gt))
+
+end = time.time()
+
+print(f"Laufzeit: {end - start:.4f} Sekunden")
