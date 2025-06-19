@@ -2,28 +2,36 @@ import os
 from skimage import io
 
 def find_image_path(root_folder: str, filename: str) -> str:
+
     """
-    Durchsucht root_folder (inkl. Unterordner) nach filename.
-    Gibt bei Erfolg den absoluten Pfad zurück, sonst wird ein FileNotFoundError geworfen.
+    searches through root_folder (incl. subfolders) for filename.
+    If succesful, returns full path of the file, otherwise raises FileNotFoundError.
     """
+
     for dirpath, dirnames, filenames in os.walk(root_folder):
         if filename in filenames:
             return os.path.join(dirpath, filename)
-    raise FileNotFoundError(f"Datei '{filename}' wurde nicht unter '{root_folder}' gefunden.")
+    raise FileNotFoundError(f"file '{filename}' was not found under '{root_folder}'")
+
 
 def load_image_gray(filename: str,
                     root_folder: str = "Data",
                     as_gray: bool = True):
+    
     """
-    Findet das Bild-Datei und lädt es als Graustufen-NumPy-Array.
+    Finds Image file and loads it as a 2D NumPy array with grayscale values. 
     
     Params:
-        filename: Name der Bilddatei, z.B. "dna-44.png"
-        root_folder: Verzeichnis, in dem die Suche startet (default "Data")
-        as_gray: ob das Bild als Graustufen geladen werden soll
+        filename: Name of image-file, e.g. "dna-44.png"
+        root_folder: Folder where image should be found (default "Data")
+        as_gray: option if image should be loaded as grayscale (default True)
     
     Returns:
-        image_array: 2D-NumPy-Array mit den Grauwerten
+        image_array: 2D-numpy array with grayscale values
+
+    Usage:
+    image = load_image_gray("dna-44.png")
     """
+
     path = find_image_path(root_folder, filename)
     return io.imread(path, as_gray=as_gray)
