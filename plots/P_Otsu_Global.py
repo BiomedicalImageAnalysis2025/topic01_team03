@@ -4,7 +4,21 @@ from glob import glob
 import matplotlib.pyplot as plt
 from skimage.filters import threshold_otsu
 import numpy as np
+import sys
 
+# Aktuelles Arbeitsverzeichnis als Projekt-Root
+project_root = os.getcwd()
+src_dir      = os.path.join(project_root, "src")
+
+# src-Verzeichnis ins Python-Modulverzeichnis aufnehmen
+if src_dir not in sys.path:
+    sys.path.insert(0, src_dir)
+
+# Ausgabe-Ordner erstellen
+output_dir = os.path.join(project_root, "output")
+os.makedirs(output_dir, exist_ok=True)
+
+#   Funktion aufrufen und Daten speichern
 def load_n2dh_gowt1_images(base_path="data-git/N2DH-GOWT1"):
     img_dir_N2DH_GOWT1 = os.path.join(base_path, "img")
     gt_dir_N2DH_GOWT1 = os.path.join(base_path, "gt")
@@ -53,15 +67,8 @@ imgs_NIH3T3, gts_NIH3T3, img_paths_NIH3T3, gt_paths_NIH3T3 = load_nih3t3_images(
 
 # --------------------------------------------------------------------------
 # Hilfsfunktion zur Dice-Berechnung
-def dice_score(otsu_img, otsu_gt):
-    if otsu_img.shape != otsu_gt.shape:
-        raise ValueError("Images don't have the same shape!")
-    sum_img = np.sum(otsu_img)
-    sum_gt = np.sum(otsu_gt)
-    positive_overlap = np.sum(np.logical_and(otsu_img, otsu_gt))
-    if sum_img + sum_gt == 0:
-        return 1.0
-    return 2 * positive_overlap / (sum_img + sum_gt)
+from Dice_Score import dice_score
+
 
 # Hilfsfunktion zur Berechnung der Dice-Werte
 #def berechne_dice_scores(imgs, gts, datensatz_name):
