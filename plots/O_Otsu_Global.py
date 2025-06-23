@@ -69,8 +69,75 @@ imgs_NIH3T3, gts_NIH3T3, img_paths_NIH3T3, gt_paths_NIH3T3 = load_nih3t3_images(
 # --------------------------------------------------------------------------
 # Importiere deine Otsu-Funktionen und Dice-Score
 from Dice_Score import dice_score
-from src.otsu_global import otsu_threshold
-from src.gray_hist import compute_gray_histogram
+#from otsu_global import otsu_threshold
+#from gray_hist import compute_gray_histogram
+import numpy as np
+from matplotlib import pyplot as plt
+from PIL import Image
+from pathlib import Path
+from typing import Union, Tuple
+def compute_gray_histogram(
+    image_source: Union[Path, str, np.ndarray],
+    bins: int = 256,
+    value_range: Tuple[int, int] = (0, 255)
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Liest ein Bild ein (Pfad oder NumPy-Array), wandelt in Graustufen um und
+    berechnet das Histogramm.
+
+    Args:
+        image_source: Pfad (Path/str) zum Bild ODER ein 2D-NumPy-Array mit Grauwerten.
+        bins: Anzahl der Bins für das Histogramm.
+        value_range: Wertebereich (min, max).
+
+    Returns:
+        hist: Array der Pixelhäufigkeiten pro Bin.
+        bin_edges: Randwerte der Bins.
+    """
+    # 1) Input erkennen und in Grauwert-Array umwandeln
+    if isinstance(image_source, (Path, str)):
+        img = Image.open(str(image_source)).convert("L")
+        arr = np.array(img)
+    elif isinstance(image_source, np.ndarray):
+        arr = image_source
+    else:
+        raise TypeError(
+            "compute_gray_histogram erwartet einen Pfad (Path/str) oder ein NumPy-Array."
+        )
+
+    # 2) Histogramm berechnen
+    hist, bin_edges = np.histogram(
+        arr.ravel(),
+        bins=bins,
+        range=value_range
+    )
+    return hist, bin_edges
+
+
+def plot_gray_histogram(hist: np.ndarray, bin_edges: np.ndarray):
+    """
+    Plottet ein Grauwert-Histogramm anhand von hist und bin_edges.
+    """
+    plt.figure(figsize=(8, 4))
+    plt.bar(
+        bin_edges[:-1],
+        hist,
+        width=bin_edges[1] - bin_edges[0],
+        align='edge'
+    )
+    plt.t
+
+def otsu_threshold(p: np.ndarray) -> int:
+    """
+    Berechnet den globalen Otsu-Schwellenwert aus Wahrscheinlichkeiten p[k].
+    """
+    P = np.cumsum(p)                    # kumulative Wahrscheinlichkeiten
+    bins = np.arange(len(p))            # mögliche Grauwert-Indizes
+    mu = np.cumsum(bins * p)            # kumuliertes gewichtetes Mittel
+    mu_T = mu[-1]                       # Gesamtmittel
+    # Interklassenvarianz mit Epsilon für Stabilität
+    sigma_b2 = (mu_T * P - mu)**2 / (P * (1 - P) + 1e-12)
+    return int(np.argmax(sigma_b2))
 
 # --------------------------------------------------------------
 def berechne_dice_scores(imgs, gts):
