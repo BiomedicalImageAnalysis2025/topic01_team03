@@ -21,12 +21,6 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 
-# src-Verzeichnis zum Pfad hinzufügen
-project_root = os.path.dirname(os.path.abspath(__file__))
-src_dir = os.path.join(project_root, "src")
-if src_dir not in sys.path:
-    sys.path.insert(0, src_dir)
-
 from src.gray_hist import compute_gray_histogram
 # Optional zum Plotten im Modul: plot_gray_histogram
 # from src.gray_hist import plot_gray_histogram
@@ -60,7 +54,7 @@ def threshold_global(image: np.ndarray) -> np.ndarray:
     """
     hist, _ = compute_gray_histogram(image)
     p = hist / hist.sum()
-    t = otsu_threshold(p)
+    return otsu_threshold(p)
 
 def apply_global_otsu(image: np.ndarray) -> np.ndarray:
     """
