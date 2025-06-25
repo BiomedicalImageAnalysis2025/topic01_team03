@@ -1,6 +1,9 @@
 from skimage.io import imread
 from skimage.filters import threshold_otsu  # otsu-global pakage
 import time
+import os
+
+print("Working Directory:", os.getcwd())
 
 start = time.time()
 
