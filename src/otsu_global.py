@@ -21,12 +21,6 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 
-# src-Verzeichnis zum Pfad hinzufügen
-project_root = os.path.dirname(os.path.abspath(__file__))
-src_dir = os.path.join(project_root, "src")
-if src_dir not in sys.path:
-    sys.path.insert(0, src_dir)
-
 from src.gray_hist import compute_gray_histogram
 # Optional zum Plotten im Modul: plot_gray_histogram
 # from src.gray_hist import plot_gray_histogram
@@ -43,13 +37,24 @@ def otsu_threshold(p: np.ndarray) -> int:
     sigma_b2 = (mu_T * P - mu)**2 / (P * (1 - P) + 1e-12)
     return int(np.argmax(sigma_b2))
 
-
 def binarize(arr: np.ndarray, t: int) -> np.ndarray:
     """
     Wendet den Schwellenwert t an und gibt ein binäres 0/1-Array zurück.
     """
     return (arr > t).astype(np.uint8)
 
+def threshold_global(image: np.ndarray) -> np.ndarray:
+    """
+    Vollständige Pipeline:
+    - Histogramm berechnen
+    - Wahrscheinlichkeiten p[k] bilden
+    - Otsu-Schwellenwert berechnen
+
+    Returns ein 2D-Binär-Array (0/1).
+    """
+    hist, _ = compute_gray_histogram(image)
+    p = hist / hist.sum()
+    return otsu_threshold(p)
 
 def apply_global_otsu(image: np.ndarray) -> np.ndarray:
     """

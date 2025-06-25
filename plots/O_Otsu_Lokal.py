@@ -3,24 +3,37 @@ import os
 from skimage.io import imread
 from glob import glob
 import matplotlib.pyplot as plt
-#from skimage.filters import threshold_otsu
+#from skimage.filters import threshold_local
 import numpy as np
 import sys
 
-# Aktuelles Arbeitsverzeichnis als Projekt-Root
+# Set the current working directory as the project root
 project_root = os.getcwd()
-src_dir      = os.path.join(project_root, "src")
+src_dir = os.path.join(project_root, "src")
 
-# src-Verzeichnis ins Python-Modulverzeichnis aufnehmen
+# Add src directory to the Python path
 if src_dir not in sys.path:
     sys.path.insert(0, src_dir)
 
-# Ausgabe-Ordner erstellen
+# Create output directory
 output_dir = os.path.join(project_root, "output")
 os.makedirs(output_dir, exist_ok=True)
 
-#   
+# --------------------------------------------------------------
 def load_n2dh_gowt1_images(base_path="data-git/N2DH-GOWT1"):
+    """
+    Load the N2DH-GOWT1 image dataset and its corresponding ground-truth masks.
+
+    Args:
+        base_path (str): Base directory containing the "img" and "gt" subfolders.
+                         Default is "data-git/N2DH-GOWT1".
+
+    Returns:
+        imgs_N2DH_GOWT1 (list[np.ndarray]): List of loaded grayscale images.
+        gts_N2DH_GOWT1 (list[np.ndarray]): List of loaded grayscale ground-truth masks.
+        img_paths_N2DH_GOWT1 (list[str]): List of file paths to the images.
+        gt_paths_N2DH_GOWT1 (list[str]): List of file paths to the ground-truth masks.
+    """
     img_dir_N2DH_GOWT1 = os.path.join(base_path, "img")
     gt_dir_N2DH_GOWT1 = os.path.join(base_path, "gt")
 
@@ -32,10 +45,24 @@ def load_n2dh_gowt1_images(base_path="data-git/N2DH-GOWT1"):
 
     return imgs_N2DH_GOWT1, gts_N2DH_GOWT1, img_paths_N2DH_GOWT1, gt_paths_N2DH_GOWT1
 
-# Funktion aufrufen und Daten speichern
+# Load N2DH-GOWT1 data
 imgs_N2DH_GOWT1, gts_N2DH_GOWT1, img_paths_N2DH_GOWT1, gt_paths_N2DH_GOWT1 = load_n2dh_gowt1_images()
 
+# --------------------------------------------------------------
 def load_n2dl_hela_images(base_path="data-git/N2DL-HeLa"):
+    """
+    Load the N2DL-HeLa image dataset and its corresponding ground-truth masks.
+
+    Args:
+        base_path (str): Base directory containing the "img" and "gt" subfolders.
+                         Default is "data-git/N2DL-HeLa".
+
+    Returns:
+        imgs_N2DL_HeLa (list[np.ndarray]): List of loaded grayscale images.
+        gts_N2DL_HeLa (list[np.ndarray]): List of loaded grayscale ground-truth masks.
+        img_paths_N2DL_HeLa (list[str]): List of file paths to the images.
+        gt_paths_N2DL_HeLa (list[str]): List of file paths to the ground-truth masks.
+    """
     img_dir_N2DL_HeLa = os.path.join(base_path, "img")
     gt_dir_N2DL_HeLa = os.path.join(base_path, "gt")
 
@@ -47,10 +74,24 @@ def load_n2dl_hela_images(base_path="data-git/N2DL-HeLa"):
 
     return imgs_N2DL_HeLa, gts_N2DL_HeLa, img_paths_N2DL_HeLa, gt_paths_N2DL_HeLa
 
-# Funktion aufrufen und Daten speichern
+# Load N2DL-HeLa data
 imgs_N2DL_HeLa, gts_N2DL_HeLa, img_paths_N2DL_HeLa, gt_paths_N2DL_HeLa = load_n2dl_hela_images()
 
+# --------------------------------------------------------------
 def load_nih3t3_images(base_path="data-git/NIH3T3"):
+    """
+    Load the NIH3T3 image dataset and its corresponding ground-truth masks.
+
+    Args:
+        base_path (str): Base directory containing the "img" and "gt" subfolders.
+                         Default is "data-git/NIH3T3".
+
+    Returns:
+        imgs_NIH3T3 (list[np.ndarray]): List of loaded grayscale images.
+        gts_NIH3T3 (list[np.ndarray]): List of loaded grayscale ground-truth masks.
+        img_paths_NIH3T3 (list[str]): List of file paths to the images.
+        gt_paths_NIH3T3 (list[str]): List of file paths to the ground-truth masks.
+    """
     img_dir_NIH3T3 = os.path.join(base_path, "img")
     gt_dir_NIH3T3 = os.path.join(base_path, "gt")
 
@@ -62,20 +103,18 @@ def load_nih3t3_images(base_path="data-git/NIH3T3"):
 
     return imgs_NIH3T3, gts_NIH3T3, img_paths_NIH3T3, gt_paths_NIH3T3
 
-# Funktion aufrufen und Daten speichern
+# Load NIH3T3 data
 imgs_NIH3T3, gts_NIH3T3, img_paths_NIH3T3, gt_paths_NIH3T3 = load_nih3t3_images()
 
-
-# --------------------------------------------------------------------------
-# Importiere deine Otsu-Funktionen und Dice-Score
+# --------------------------------------------------------------
 from Dice_Score import dice_score
-#from otsu_global import otsu_threshold
-#from gray_hist import compute_gray_histogram
+#from otsu_local import local_otsu
 import numpy as np
 from matplotlib import pyplot as plt
 from PIL import Image
 from pathlib import Path
 from typing import Union, Tuple
+
 def compute_gray_histogram(
     image_source: Union[Path, str, np.ndarray],
     bins: int = 256,
@@ -139,50 +178,77 @@ def otsu_threshold(p: np.ndarray) -> int:
     sigma_b2 = (mu_T * P - mu)**2 / (P * (1 - P) + 1e-12)
     return int(np.argmax(sigma_b2))
 
-# --------------------------------------------------------------
-def berechne_dice_scores(imgs, gts):
-    """
-    Berechnet die Dice-Scores zwischen Otsu-binarisierten Bildern und den Ground-Truth-Masken.
+import os
+import numpy as np
+from skimage import img_as_ubyte
 
-    Args:
-        imgs (list[np.ndarray]): Die Eingabebilder.
-        gts (list[np.ndarray]): Die zugehörigen Ground-Truth-Bilder.
-
-    Returns:
-        list[float]: Die berechneten Dice-Scores.
+def local_otsu(image: np.ndarray, radius: int = 3) -> (np.ndarray, np.ndarray):
     """
+    Führt lokales Otsu Thresholding aus:
+      - radius: Halbbreite des Fensters (ergibt (2*radius+1)^2 Pixel).
+    Gibt zurück:
+      - t_map:  2D‐Array mit lokalem Schwellenwert pro Pixel
+      - mask:   2D‐Bool‐Array, True = Objekt (Pixel > t_map)
+    """
+    # 1. Stelle sicher, dass image uint8 ist
+    img_u8 = img_as_ubyte(image)
+    H, W = img_u8.shape
+
+    # 2. Lege Map und Maske an
+    t_map = np.zeros((H, W), dtype=np.uint8)
+    mask  = np.zeros((H, W), dtype=bool)
+
+    # 3. Pad das Bild, damit Randpixel verarbeitet werden können
+    pad = radius
+    padded = np.pad(img_u8, pad, mode="reflect")
+
+    # 4. Über jeden Pixel im Originalbild iterieren
+    w = 2 * radius + 1
+    for i in range(H):
+        for j in range(W):
+            # Fenster im gepaddeten Bild herausschneiden
+            block = padded[i : i + w, j : j + w]
+
+            # Histogramm der Graustufen 0..255 im Block
+            hist, _ = compute_gray_histogram(block)
+            p = hist / hist.sum()
+
+            # Otsu‐Threshold aus dem lokalen Histogramm
+            t = otsu_threshold(p)
+            t_map[i, j] = t
+
+            # Binärmaske setzen
+            mask[i, j] = (img_u8[i, j] > t)
+
+    return t_map, mask
+
+def calculate_dice_scores_local(imgs, gts):
+    otsu_imgs = []
+    for img in imgs:
+        t_map, mask = local_otsu(img)  # beide Rückgabewerte
+        otsu_imgs.append(mask)         # nur die binäre Maske nutzen
+
+    gt_binaries = [gt > 0 for gt in gts]
+
     scores = []
-    for img, gt in zip(imgs, gts):
-        # Histogramm und Wahrscheinlichkeit berechnen
-        hist, _ = compute_gray_histogram(img)
-        p = hist / hist.sum()
+    for i in range(min(len(otsu_imgs), len(gt_binaries))):
+        scores.append(dice_score(otsu_imgs[i], gt_binaries[i]))
 
-        # Otsu-Schwelle berechnen
-        t = otsu_threshold(p)
-
-        # Bild binarisieren
-        otsu_img = img > t
-
-        # GT binarisieren
-        gt_binary = gt > 0
-
-        # Dice-Score berechnen
-        score = dice_score(otsu_img, gt_binary)
-        scores.append(score)
     return scores
 
-# --------------------------------------------------------------
-# Berechne die Dice-Scores für die drei Datensätze
-dice_gowt1 = berechne_dice_scores(imgs_N2DH_GOWT1, gts_N2DH_GOWT1)
-dice_hela = berechne_dice_scores(imgs_N2DL_HeLa, gts_N2DL_HeLa)
-dice_nih = berechne_dice_scores(imgs_NIH3T3, gts_NIH3T3)
 
-# Als einfache Floats statt np.float64
+# --------------------------------------------------------------
+# Compute Dice-scores for all datasets
+dice_gowt1 = calculate_dice_scores_local(imgs_N2DH_GOWT1, gts_N2DH_GOWT1)
+dice_hela = calculate_dice_scores_local(imgs_N2DL_HeLa, gts_N2DL_HeLa)
+dice_nih = calculate_dice_scores_local(imgs_NIH3T3, gts_NIH3T3)
+
+# Convert scores to regular Python floats
 dice_gowt1 = [float(score) for score in dice_gowt1]
 dice_hela = [float(score) for score in dice_hela]
 dice_nih = [float(score) for score in dice_nih]
 
-# Schön formatiert ausgeben
-print("GOWT1 Scores:", [f"{score:.4f}" for score in dice_gowt1])
-print("HeLa Scores:", [f"{score:.4f}" for score in dice_hela])
-print("NIH3T3 Scores:", [f"{score:.4f}" for score in dice_nih])
+# Print all Dice-scores
+print("GOWT1 Scores:", [f"{score}" for score in dice_gowt1])
+print("HeLa Scores:", [f"{score}" for score in dice_hela])
+print("NIH3T3 Scores:", [f"{score}" for score in dice_nih])
