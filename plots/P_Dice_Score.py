@@ -68,7 +68,7 @@ imgs_NIH3T3, gts_NIH3T3, img_paths_NIH3T3, gt_paths_NIH3T3 = load_nih3t3_images(
 
 # --------------------------------------------------------------------------
 # Importiere deine Otsu-Funktionen und Dice-Score
-from Dice_Score import dice_score
+from medpy.metric import binary
 #from otsu_global import otsu_threshold
 #from gray_hist import compute_gray_histogram
 import numpy as np
@@ -167,7 +167,7 @@ def berechne_dice_scores(imgs, gts):
         gt_binary = gt > 0
 
         # Dice-Score berechnen
-        score = dice_score(otsu_img, gt_binary)
+        score = binary.dc(otsu_img, gt_binary)
         scores.append(score)
     return scores
 
