@@ -16,14 +16,12 @@ Im __main__-Block:
 """
 
 import os
-import sys
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 
 from src.gray_hist import compute_gray_histogram
-# Optional zum Plotten im Modul: plot_gray_histogram
-# from src.gray_hist import plot_gray_histogram
+
 
 def otsu_threshold(p: np.ndarray) -> int:
     """
