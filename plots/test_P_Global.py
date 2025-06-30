@@ -25,13 +25,28 @@ imgs_NIH3T3, gts_NIH3T3, _, _ = load_nih3t3_images()
 # --------------------------------------------------------------
 def calculate_dice_scores_OP(imgs, gts):
     """
-    Binarisiert die Bilder mit dem Otsu-Schwellenwert und berechnet die Dice-Scores
-    im Vergleich zu den Ground-Truth-Masken.
-    """
-    otsu_imgs = [img > threshold_otsu(img) for img in imgs]
-    gt_binaries = [gt > 0 for gt in gts]
-    return [float(dice_score(otsu, gt)) for otsu, gt in zip(otsu_imgs, gt_binaries)]
+    Binarize the images using Otsu's threshold and compute the Dice-score
+    against the corresponding ground-truth masks.
 
+    Args:
+        imgs (list[np.ndarray]): List of grayscale images.
+        gts (list[np.ndarray]): List of ground-truth masks.
+
+    Returns:
+        scores (list[float]): List of Dice-scores for each image/ground-truth pair.
+    """
+    # Compute a binary version of each image using Otsu's threshold
+    otsu_imgs = [img > threshold_otsu(img) for img in imgs]
+
+    # Binarize the ground-truths (assuming they are already masks)
+    gt_binaries = [gt > 0 for gt in gts]
+
+    scores = []
+    for i in range(min(len(otsu_imgs), len(gt_binaries))):
+        score = dice_score(otsu_imgs[i], gt_binaries[i])
+        scores.append(score)
+
+    return scores
 # --------------------------------------------------------------
 # Dice-Scores berechnen
 dice_gowt1 = calculate_dice_scores_OP(imgs_N2DH_GOWT1, gts_N2DH_GOWT1)
