@@ -4,12 +4,23 @@ from glob import glob
 import matplotlib.pyplot as plt
 from skimage.filters import threshold_otsu
 import numpy as np
+import sys
 
+# Dynamisch src-Verzeichnis zur Pfadsuche hinzufügen
+current_dir = os.path.dirname(os.path.abspath(__file__))               # z. B. .../topic01_team03/plots
+project_root = os.path.abspath(os.path.join(current_dir, ".."))       # → .../topic01_team03
+src_dir = os.path.join(project_root, "src")                            # → .../topic01_team03/src
 
+if src_dir not in sys.path:
+    sys.path.insert(0, src_dir)
+
+# Create output directory
+output_dir = os.path.join(project_root, "output")
+os.makedirs(output_dir, exist_ok=True)
 
 # import all needed funktions
-from src.imread_all import load_n2dh_gowt1_images, load_n2dl_hela_images, load_nih3t3_images
-from src.Dice_Score import dice_score
+from imread_all import load_n2dh_gowt1_images, load_n2dl_hela_images, load_nih3t3_images
+from Dice_Score import dice_score
 
 # --------------------------------------------------------------
 
@@ -56,11 +67,11 @@ dice_hela = calculate_dice_scores_OP(imgs_N2DL_HeLa, gts_N2DL_HeLa)
 dice_nih = calculate_dice_scores_OP(imgs_NIH3T3, gts_NIH3T3)
 
 # Convert numpy types to plain float
-dice_gowt1 = [float(score) for score in dice_gowt1]
-dice_hela = [float(score) for score in dice_hela]
-dice_nih = [float(score) for score in dice_nih]
+dice_gowt1 = [float(scores) for scores in dice_gowt1]
+dice_hela = [float(scores) for scores in dice_hela]
+dice_nih = [float(scores) for scores in dice_nih]
 
 # Print all Dice-scores
-print("GOWT1 Scores:", [f"{score}" for score in dice_gowt1])
-print("HeLa Scores:", [f"{score}" for score in dice_hela])
-print("NIH3T3 Scores:", [f"{score}" for score in dice_nih])
+print("GOWT1 Scores:", [f"{scores}" for scores in dice_gowt1])
+print("HeLa Scores:", [f"{scores}" for scores in dice_hela])
+print("NIH3T3 Scores:", [f"{scores}" for scores in dice_nih])
