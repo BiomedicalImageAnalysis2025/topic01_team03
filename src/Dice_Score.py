@@ -26,16 +26,3 @@ def dice_score(otsu_img: np.ndarray, otsu_gt: np.ndarray) -> float:
 
     return 2 * positive_overlap / (sum_img + sum_gt)
 
-from skimage.io import imread
-if __name__ == "__main__":
-    # Pfade zu binären Bildern (z. B. 0/255 oder True/False)
-    otsu_img_path = "data-git/N2DH-GOWT1/img/t01.tif"
-    otsu_gt_path = "data-git/N2DH-GOWT1/gt/man_seg01.tif"
-
-    # Bilder laden und in bool konvertieren
-    otsu_img = imread(otsu_img_path, as_gray=True) > 0
-    otsu_gt = imread(otsu_gt_path, as_gray=True) > 0
-
-    # Dice Score berechnen
-    score = dice_score(otsu_img, otsu_gt)
-    print(f"Dice Score: {score}")
