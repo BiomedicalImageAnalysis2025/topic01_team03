@@ -4,23 +4,13 @@ from glob import glob
 import matplotlib.pyplot as plt
 from skimage.filters import threshold_otsu
 import numpy as np
-import sys
 
-# Set the current working directory as the project root
-project_root = os.getcwd()
-src_dir = os.path.join(project_root, "src")
 
-# Add src directory to the Python path
-if src_dir not in sys.path:
-    sys.path.insert(0, src_dir)
-
-# Create output directory
-output_dir = os.path.join(project_root, "output")
-os.makedirs(output_dir, exist_ok=True)
 
 # import all needed funktions
 from src.imread_all import load_n2dh_gowt1_images, load_n2dl_hela_images, load_nih3t3_images
 from src.Dice_Score import dice_score
+
 # --------------------------------------------------------------
 
 # Load N2DH-GOWT1 data
@@ -33,7 +23,6 @@ imgs_N2DL_HeLa, gts_N2DL_HeLa, img_paths_N2DL_HeLa, gt_paths_N2DL_HeLa = load_n2
 imgs_NIH3T3, gts_NIH3T3, img_paths_NIH3T3, gt_paths_NIH3T3 = load_nih3t3_images()
 
 # --------------------------------------------------------------
-from Dice_Score import dice_score
 
 def calculate_dice_scores_OP(imgs, gts):
     """
