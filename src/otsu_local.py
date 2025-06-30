@@ -1,9 +1,15 @@
 import os
 import numpy as np
 from skimage import img_as_ubyte
+from pathlib import Path
 
-from src.gray_hist import compute_gray_histogram
-from src.otsu_global import otsu_threshold
+HERE = Path(__file__).resolve().parent
+os.chdir(HERE)
+
+print("Working Directory:", os.getcwd())
+
+from gray_hist import compute_gray_histogram
+from otsu_global import otsu_threshold
 
 def local_otsu(image: np.ndarray, radius: int = 3) -> (np.ndarray, np.ndarray):
     """
