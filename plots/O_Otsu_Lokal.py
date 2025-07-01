@@ -51,11 +51,11 @@ def local_otsu(image: np.ndarray, radius: int = 15) -> np.ndarray:
 # --------------------------------------------------------------------------
  
 # Funktion aufrufen und Daten speichern
-imgs_N2DH_GOWT1, gts_N2DH_GOWT1, img_paths_N2DH_GOWT1, gt_paths_N2DH_GOWT1 = load_n2dh_gowt1_images()
+#imgs_N2DH_GOWT1, gts_N2DH_GOWT1, img_paths_N2DH_GOWT1, gt_paths_N2DH_GOWT1 = load_n2dh_gowt1_images()
 
 #imgs_N2DL_HeLa, gts_N2DL_HeLa, img_paths_N2DL_HeLa, gt_paths_N2DL_HeLa = load_n2dl_hela_images()
 
-#imgs_NIH3T3, gts_NIH3T3, img_paths_NIH3T3, gt_paths_NIH3T3 = load_nih3t3_images()
+imgs_NIH3T3, gts_NIH3T3, img_paths_NIH3T3, gt_paths_NIH3T3 = load_nih3t3_images()
 #from skimage.io import imread
 
 #imgs1 = imread("data-git/N2DH-GOWT1/img/t01.tif", as_gray=True)
@@ -77,22 +77,22 @@ def calculate_dice_scores_local(imgs, gts):
 
 # --------------------------------------------------------------
 # Compute Dice-scores for all datasets
-dice_gowt1 = calculate_dice_scores_local(imgs_N2DH_GOWT1, gts_N2DH_GOWT1)
+#dice_gowt1 = calculate_dice_scores_local(imgs_N2DH_GOWT1, gts_N2DH_GOWT1)
 #dice_hela = calculate_dice_scores_local(imgs_N2DL_HeLa, gts_N2DL_HeLa)
-#dice_nih = calculate_dice_scores_local(imgs_NIH3T3, gts_NIH3T3)
+dice_nih = calculate_dice_scores_local(imgs_NIH3T3, gts_NIH3T3)
 
 #dice = calculate_dice_scores_local(imgs, gts)
 
 # Convert scores to regular Python floats
-dice_gowt1 = [float(score) for score in dice_gowt1]
+#dice_gowt1 = [float(score) for score in dice_gowt1]
 #dice_hela = [float(score) for score in dice_hela]
-#dice_nih = [float(score) for score in dice_nih]
+dice_nih = [float(score) for score in dice_nih]
 
 #dice = [float(score) for score in dice]
 
 # Print all Dice-scores
-print("GOWT1 Scores:", [f"{score}" for score in dice_gowt1])
+#print("GOWT1 Scores:", [f"{score}" for score in dice_gowt1])
 #print("HeLa Scores:", [f"{score}" for score in dice_hela])
-#print("NIH3T3 Scores:", [f"{score}" for score in dice_nih])
+print("NIH3T3 Scores:", [f"{score}" for score in dice_nih])
 
 #print("Scores:", [f"{score}" for score in dice])

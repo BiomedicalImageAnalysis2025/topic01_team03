@@ -38,7 +38,7 @@ def calculate_O_dice_scores_OLP(imgs, gts):
         scores (list[float]): List of Dice-scores for each image/ground-truth pair.
     """
     # Compute binary masks using local Otsu threshold
-    otsu_imgs = [img > threshold_local(img, block_size=35, offset=0) for img in imgs]
+    otsu_imgs = [img > threshold_local(img, block_size=31, offset=0) for img in imgs]
     # Binarize ground-truths
     gt_binaries = [gt > 0 for gt in gts]
 

@@ -1,8 +1,5 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-import matplotlib.pyplot as plt
-import seaborn as sns
 import numpy as np
 
 # Define the Dice scores obtained from two methods for comparison.
@@ -14,53 +11,50 @@ indices =       [0.5705017182130584, 0.32258217915948406, 0.568002229254991, 0.6
 a = dice_scores == indices
 print(a)
 
-# Compute the linear regression between the two sets of Dice scores. 'slope' represents the gradient of the regression line, and 'intercept' is the point where the line crosses the y-axis.
 slope, intercept = np.polyfit(indices, dice_scores, 1)
 
-
-# Initialize the figure for the plot with a defined size.
+# Figure:
 plt.figure(figsize=(8, 6))
 
-# Plot the scatter plot of Dice scores with a fitted regression line using seaborn.
-sns.regplot(
-    x=indices,
-    y=dice_scores,
-    scatter=True,
-    ci=None,
-    scatter_kws={"color": "blue"},       # Set point color to blue
-    line_kws={"color": "red"},           # Set regression line color to red
-)
+# Punkte manuell plotten
+for x, y in zip(indices, dice_scores):
+    color = "red" if y > x else "blue"
+    plt.scatter(x, y, color=color)
 
-# Generate a string representation of the regression equation with cases handling special situations where slope or intercept is zero
-if slope == 0:
-    equation = f"y = {intercept:.1f}"
-    
-elif intercept == 0:
-    
-    equation = f"y = {slope:.1f} x"
+# Regressionslinie
+x_fit = np.linspace(min(indices), max(indices), 100)
+y_fit = slope * x_fit + intercept
+plt.plot(x_fit, y_fit, color="black", linestyle="-", label="Regression")
 
-elif intercept == 0 and slope == 0:
-    equation = f"y = 0"
+# Linie y = x
+plt.plot([0, 1], [0, 1], color="green", linestyle="--", label="y = x")
 
-else:
-    equation = f"y = {slope:.1f} x + {intercept:.1f}"
-
-# Display the regression gradient and the regression equation in the plot using a text box in the upper-left corner of the plot area.
+# Regressionsgleichung
+equation = f"y = {slope:.2f} x + {intercept:.2f}"
 plt.text(
-    0.05, 0.95,                             # Position relative to the axes (0-1 scale)
-    f"Gradient: {slope:.1f}\n{equation}",   # Text content: gradient + equation
-    ha="left", va="top",                    # Align text box to the top-left
-    transform=plt.gca().transAxes,          # Use axes-relative coordinates
-    fontsize=12, bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.7)  # Style text box
+    0.05, 0.95,
+    f"Gradient: {slope:.2f}\n{equation}",
+    ha="left", va="top",
+    transform=plt.gca().transAxes,
+    fontsize=12, bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.7)
 )
 
-# Add labels and a descriptive title to the plot.
+# Labels und Titel
 plt.xlabel("Dice Score of our Otsu Global")
 plt.ylabel("Dice Score of Package Otsu Global")
 plt.title("Package Otsu Global vs. Our Otsu Global")
 
-# Add a grid to improve plot readability.
-plt.grid(True, linestyle='--', alpha=0.5)
+# Legende & Grid
+plt.legend()
+plt.grid(True, linestyle="--", alpha=0.5)
 
-# Render the plot.
+# Plot anzeigen
 plt.show()
+
+# Interpretation basierend auf Regressionslinie vs. y=x:
+if slope < 1 or (np.isclose(slope, 1) and intercept < 0):
+    print(f"Steigung: {slope:.2f} → Deine Methode erzielt im Durchschnitt bessere Dice-Scores als die Vergleichsmethode (Punkte liegen unter y=x).")
+elif slope > 1 or (np.isclose(slope, 1) and intercept > 0):
+    print(f"Steigung: {slope:.2f} → Deine Methode erzielt im Durchschnitt schlechtere Dice-Scores als die Vergleichsmethode (Punkte liegen über y=x).")
+else:
+    print(f"Steigung: {slope:.2f} → Deine Methode liefert im Durchschnitt ähnliche Dice-Scores wie die Vergleichsmethode.")
