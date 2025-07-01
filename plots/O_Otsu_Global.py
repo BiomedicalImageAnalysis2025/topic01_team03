@@ -72,72 +72,86 @@ from Dice_Score import dice_score
 #from otsu_global import otsu_threshold
 #from gray_hist import compute_gray_histogram
 import numpy as np
-from matplotlib import pyplot as plt
-from PIL import Image
-from pathlib import Path
-from typing import Union, Tuple
-def compute_gray_histogram(
-    image_source: Union[Path, str, np.ndarray],
-    bins: int = 256,
-    value_range: Tuple[int, int] = (0, 255)
-) -> Tuple[np.ndarray, np.ndarray]:
+from typing import Tuple
+
+def custom_histogram(image: np.ndarray, nbins: int = 256) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Liest ein Bild ein (Pfad oder NumPy-Array), wandelt in Graustufen um und
-    berechnet das Histogramm.
+    Computes the histogram and corresponding bin centers of a grayscale image,
+    replicating the behavior of skimage.exposure.histogram, including normalization
+    to the [0, 255] range. This ensures consistent behavior with Otsu implementations
+    that assume 8-bit images.
 
     Args:
-        image_source: Pfad (Path/str) zum Bild ODER ein 2D-NumPy-Array mit Grauwerten.
-        bins: Anzahl der Bins für das Histogramm.
-        value_range: Wertebereich (min, max).
+        image (np.ndarray): Input image as a 2D array of grayscale values.
+        nbins (int): Number of bins for the histogram (default: 256).
 
     Returns:
-        hist: Array der Pixelhäufigkeiten pro Bin.
-        bin_edges: Randwerte der Bins.
+        hist (np.ndarray): Array of histogram frequencies for each bin.
+        bin_centers (np.ndarray): Array of bin center values.
     """
-    # 1) Input erkennen und in Grauwert-Array umwandeln
-    if isinstance(image_source, (Path, str)):
-        img = Image.open(str(image_source)).convert("L")
-        arr = np.array(img)
-    elif isinstance(image_source, np.ndarray):
-        arr = image_source
-    else:
-        raise TypeError(
-            "compute_gray_histogram erwartet einen Pfad (Path/str) oder ein NumPy-Array."
-        )
+    # Determine the minimum and maximum pixel intensity in the image
+    img_min, img_max = image.min(), image.max()
 
-    # 2) Histogramm berechnen
+    # Normalize the image intensities to the range [0, 255], as in skimage
+    image_scaled = (image - img_min) / (img_max - img_min) * 255
+
+    # Compute the histogram of the scaled image within [0, 255]
     hist, bin_edges = np.histogram(
-        arr.ravel(),
-        bins=bins,
-        range=value_range
+        image_scaled.ravel(),
+        bins=nbins,
+        range=(0, 255)
     )
-    return hist, bin_edges
+
+    # Compute bin centers as the average of adjacent bin edges
+    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+
+    return hist, bin_centers
 
 
-def plot_gray_histogram(hist: np.ndarray, bin_edges: np.ndarray):
+def otsu_threshold_skimage_like(image: np.ndarray) -> float:
     """
-    Plottet ein Grauwert-Histogramm anhand von hist und bin_edges.
+    Computes the global Otsu threshold of an input grayscale image in a way that matches
+    the behavior of skimage.filters.threshold_otsu, including histogram scaling and
+    threshold rescaling back to the original intensity range.
+
+    This function enables nearly identical thresholding results to skimage's implementation,
+    even on images with floating-point or non-8-bit integer data.
+
+    Args:
+        image (np.ndarray): Input image as a 2D array of grayscale values.
+
+    Returns:
+        threshold_original (float): Computed Otsu threshold mapped back to the original image range.
     """
-    plt.figure(figsize=(8, 4))
-    plt.bar(
-        bin_edges[:-1],
-        hist,
-        width=bin_edges[1] - bin_edges[0],
-        align='edge'
+    # Compute histogram and bin centers consistent with skimage
+    hist, bin_centers = custom_histogram(image, nbins=256)
+    hist = hist.astype(np.float64)
+
+    # Normalize histogram to obtain probability distribution
+    hist_norm = hist / hist.sum()
+
+    # Compute cumulative sums of class probabilities and means
+    weight1 = np.cumsum(hist_norm)
+    weight2 = np.cumsum(hist_norm[::-1])[::-1]
+    mean1 = np.cumsum(hist_norm * bin_centers)
+    mean2 = np.cumsum((hist_norm * bin_centers)[::-1])[::-1]
+
+    # Compute inter-class variance for each threshold
+    variance12 = (
+        weight1[:-1] * weight2[1:] *
+        (mean1[:-1] / weight1[:-1] - mean2[1:] / weight2[1:])**2
     )
-    plt.t
 
-def otsu_threshold(p: np.ndarray) -> int:
-    """
-    Berechnet den globalen Otsu-Schwellenwert aus Wahrscheinlichkeiten p[k].
-    """
-    P = np.cumsum(p)                    # kumulative Wahrscheinlichkeiten
-    bins = np.arange(len(p))            # mögliche Grauwert-Indizes
-    mu = np.cumsum(bins * p)            # kumuliertes gewichtetes Mittel
-    mu_T = mu[-1]                       # Gesamtmittel
-    # Interklassenvarianz mit Epsilon für Stabilität
-    sigma_b2 = (mu_T * P - mu)**2 / (P * (1 - P) + 1e-12)
-    return int(np.argmax(sigma_b2))
+    # Find the bin index corresponding to the maximum inter-class variance
+    idx = np.argmax(variance12)
+    threshold_scaled = bin_centers[idx]
+
+    # Rescale the threshold from [0, 255] back to the original image intensity range
+    img_min, img_max = image.min(), image.max()
+    final_threshold = threshold_scaled / 255 * (img_max - img_min) + img_min
+
+    return final_threshold
+
 
 # --------------------------------------------------------------
 def berechne_dice_scores(imgs, gts):
@@ -153,12 +167,9 @@ def berechne_dice_scores(imgs, gts):
     """
     scores = []
     for img, gt in zip(imgs, gts):
-        # Histogramm und Wahrscheinlichkeit berechnen
-        hist, _ = compute_gray_histogram(img)
-        p = hist / hist.sum()
 
         # Otsu-Schwelle berechnen
-        t = otsu_threshold(p)
+        t = otsu_threshold_skimage_like(img)
 
         # Bild binarisieren
         otsu_img = img > t
@@ -183,6 +194,6 @@ dice_hela = [float(score) for score in dice_hela]
 dice_nih = [float(score) for score in dice_nih]
 
 # Schön formatiert ausgeben
-print("GOWT1 Scores:", [f"{score}" for score in dice_gowt1])
-print("HeLa Scores:", [f"{score}" for score in dice_hela])
-print("NIH3T3 Scores:", [f"{score}" for score in dice_nih])
+print("GOWT1 Scores =", [f"{score}" for score in dice_gowt1])
+print("HeLa Scores =", [f"{score}" for score in dice_hela])
+print("NIH3T3 Scores =", [f"{score}" for score in dice_nih])
