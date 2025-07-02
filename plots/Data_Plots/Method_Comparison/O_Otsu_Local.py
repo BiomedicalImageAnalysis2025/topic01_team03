@@ -8,15 +8,10 @@ project_root = os.path.abspath(os.path.join(script_dir, "..", "..", ".."))  # th
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-#import importlib.util
-
-#spec = importlib.util.find_spec("src.Otsu_Lokal")
-#print("Import src.Otsu_Lokal found at:", spec.origin)
-
 # Imports from project-specific src/ directory
 from src.imread_all import load_n2dh_gowt1_images, load_n2dl_hela_images, load_nih3t3_images
 from src.Dice_Score import dice_score
-from src.Otsu_Lokal import local_otsu
+from src.Otsu_Local import local_otsu
 
 # --------------------------------------------------------------------------
 # Load images and ground-truth masks for all dataset
