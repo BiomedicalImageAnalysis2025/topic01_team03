@@ -11,9 +11,9 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 
-# imports from srd
+# imports from src
 from src.imread_all import load_n2dh_gowt1_images, load_n2dl_hela_images, load_nih3t3_images
-from src.Complete_Otsu_Global import custom_histogram, otsu_threshold_skimage_like
+from src.Complete_Otsu_Global import otsu_threshold_skimage_like
 
 # --------------------------------------------------------------------------
  
@@ -25,7 +25,7 @@ imgs_N2DL_HeLa, gts_N2DL_HeLa, img_paths_N2DL_HeLa, gt_paths_N2DL_HeLa = load_n2
 imgs_NIH3T3, gts_NIH3T3, img_paths_NIH3T3, gt_paths_NIH3T3 = load_nih3t3_images()
 
 # --------------------------------------------------------------
-def calculate_P_dice_scores(imgs, gts):
+def calculate_P_dice_scores_OO(imgs, gts):
     """
     Berechnet die Dice-Scores zwischen Otsu-binarisierten Bildern und den Ground-Truth-Masken.
 
@@ -55,9 +55,9 @@ def calculate_P_dice_scores(imgs, gts):
 
 # --------------------------------------------------------------
 # Berechne die Dice-Scores für die drei Datensätze
-dice_gowt1 = calculate_P_dice_scores(imgs_N2DH_GOWT1, gts_N2DH_GOWT1)
-dice_hela = calculate_P_dice_scores(imgs_N2DL_HeLa, gts_N2DL_HeLa)
-dice_nih = calculate_P_dice_scores(imgs_NIH3T3, gts_NIH3T3)
+dice_gowt1 = calculate_P_dice_scores_OO(imgs_N2DH_GOWT1, gts_N2DH_GOWT1)
+dice_hela = calculate_P_dice_scores_OO(imgs_N2DL_HeLa, gts_N2DL_HeLa)
+dice_nih = calculate_P_dice_scores_OO(imgs_NIH3T3, gts_NIH3T3)
 
 # Als einfache Floats statt np.float64
 dice_gowt1 = [float(score) for score in dice_gowt1]

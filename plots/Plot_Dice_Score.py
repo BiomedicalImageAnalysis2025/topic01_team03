@@ -4,12 +4,12 @@ import numpy as np
 
 """
 This script provides a quantitative comparison between Dice scores obtained from two different methods:
-our custom Otsu thresholding implementation ("our Otsu Global") and a reference implementation from skimage.filters
-("Package Otsu Global"). The goal is to evaluate whether our method consistently produces better, worse,
+our custom Dice Score implementation ("our Dice Score") and a reference implementation from medpy.metric
+("Package Dice Score"). The goal is to evaluate whether our method consistently produces better, worse,
 or equivalent segmentation performance.
 
 First, Dice scores from both methods are plotted against each other in a scatter plot. Points are colored
-red if the Dice Score of the package for that image exceeds our Dice score (indicating an inferior performance of our Method),
+red if the package Dice Score for that image exceeds our Dice score (indicating an inferior performance of our Method),
 and green otherwise. Blue on the other hand indicates that the Dice Scores of both methods are similar.
 Additionally, the regression line fitted to the paired scores is plotted alongside
 the identity line (y=x), which represents ideal agreement.
@@ -27,10 +27,9 @@ visual inspection. An automated interpretation is printed, summarizing whether o
 superior, inferior, or comparable to the reference based on the regression analysis.
 """
 
-
 # Define the Dice scores obtained from two methods for comparison.
-# Here, 'package_dice_scores' (origin: output of P_Otsu_Global.py) represents the package computed Dice coefficients, and 'our_dice_scores' (origin: output of O_Otsu_Global.py) represents our reference Dice scores.
-package_dice_scores =   [0.5705017182130584, 0.32258217915948406, 0.568002229254991, 0.5830196570472606, 0.6502180828858916, 0.588161094224924, 0.6855886556007476, 0.6478693311433525, 0.76845804612436, 0.7660179019659928, 0.8943783223933183, 0.8845252721173281, 0.8133777288472382, 0.7026585714883163, 0.7528567225654604, 0.647632667167185, 0.6095864948254034, 0.7237186625334818, 0.028995403964229303, 0.42998864378556173, 0.0, 0.680536637820677, 0.00021090001581750118, 0.5789127665023891, 0.6286483663940449, 0.07605520913993832, 0.06919951480604966, 0.7965485556767932]
+# Here, 'package_dice_scores' (origin: output of P_Dice_Score.py) represents the package computed Dice coefficients, and 'our_dice_scores' (origin: output of O_Otsu_Global.py) represents the reference our Dice scores. 
+package_dice_scores =   [0.5705017182130584, 0.32258217915948406, 0.568002229254991, 0.6271474725294504, 0.6502180828858916, 0.6615248976783192, 0.6923060104510571, 0.649295517879001, 0.7760944676315427, 0.7761119912979735, 0.9128436675562167, 0.8845252721173281, 0.8225479821936802, 0.758336987687637, 0.7528567225654604, 0.647632667167185, 0.6466958730507323, 0.7237186625334818, 0.03500481623642597, 0.46518566600901357, 0.0, 0.6762501531852865, 0.00026339009389856846, 0.5757554586315079, 0.6165448260228947, 0.07605520913993832, 0.07186834004262373, 0.7925039681767514]
 our_dice_scores =       [0.5705017182130584, 0.32258217915948406, 0.568002229254991, 0.6271474725294504, 0.6502180828858916, 0.6615248976783192, 0.6923060104510571, 0.649295517879001, 0.7760944676315427, 0.7761119912979735, 0.9128436675562167, 0.8845252721173281, 0.8225479821936802, 0.758336987687637, 0.7528567225654604, 0.647632667167185, 0.6466958730507323, 0.7237186625334818, 0.03500481623642597, 0.46518566600901357, 0.0, 0.6762501531852865, 0.00026339009389856846, 0.5757554586315079, 0.6165448260228947, 0.07605520913993832, 0.07186834004262373, 0.7925039681767514]
 
 # Verify whether both lists are identical element-wise; expected True if identical.
@@ -69,9 +68,9 @@ plt.plot([min_val, max_val], [min_val, max_val], color="black", linestyle="--", 
   #       fontsize=12, bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.7))
 
 # Axes labels and title
-plt.xlabel("Dice Score of Our Otsu Global")
-plt.ylabel("Dice Score of Package Otsu Global")
-plt.title("Package Otsu Global vs. Our Otsu Global")
+plt.xlabel("Our Dice Score")
+plt.ylabel("Package Dice Score")
+plt.title("Package Dice Score vs. Our Dice Score\n(using our Otsu Global)")
 
 plt.grid(True, linestyle="--", alpha=0.5)
 plt.legend()
