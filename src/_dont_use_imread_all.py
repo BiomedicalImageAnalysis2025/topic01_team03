@@ -3,8 +3,6 @@
 import os
 from skimage.io import imread
 from glob import glob
-import matplotlib.pyplot as plt
-import numpy as np
 
 def load_n2dh_gowt1_images(base_path="data-git/N2DH-GOWT1"):
     
@@ -42,4 +40,3 @@ def load_nih3t3_images(base_path="data-git/NIH3T3"):
     gts_NIH3T3 = [imread(path, as_gray=True) for path in gt_paths_NIH3T3]
 
     return imgs_NIH3T3, gts_NIH3T3, img_paths_NIH3T3, gt_paths_NIH3T3
-

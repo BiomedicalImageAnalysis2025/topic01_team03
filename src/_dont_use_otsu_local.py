@@ -1,9 +1,11 @@
+#src/otsu_lokal.py
+
 import os
 import numpy as np
 from skimage import img_as_ubyte
 
 from src.gray_hist import compute_gray_histogram
-from src.otsu_global import otsu_threshold
+from src.Complete_Otsu_Global import otsu_threshold_skimage_like
 
 def local_otsu(image: np.ndarray, radius: int = 3) -> (np.ndarray, np.ndarray):
     """
@@ -37,7 +39,7 @@ def local_otsu(image: np.ndarray, radius: int = 3) -> (np.ndarray, np.ndarray):
             p = hist / hist.sum()
 
             # Otsu‐Threshold aus dem lokalen Histogramm
-            t = otsu_threshold(p)
+            t = otsu_threshold_skimage_like(p)
             t_map[i, j] = t
 
             # Binärmaske setzen

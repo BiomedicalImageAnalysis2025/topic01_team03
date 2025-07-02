@@ -1,4 +1,5 @@
-# otsu_threshold.py
+#src/otsu_global.py
+
 """
 otsu_threshold.py
 
@@ -16,12 +17,14 @@ Im __main__-Block:
 """
 
 import os
+import sys
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 
 from src.gray_hist import compute_gray_histogram
-
+# Optional zum Plotten im Modul: plot_gray_histogram
+# from src.gray_hist import plot_gray_histogram
 
 def otsu_threshold(p: np.ndarray) -> int:
     """
@@ -68,42 +71,3 @@ def apply_global_otsu(image: np.ndarray) -> np.ndarray:
     p = hist / hist.sum()
     t = otsu_threshold(p)
     return binarize(image, t)
-
-
-if __name__ == "__main__":
-    # Ausgabe-Ordner vorbereiten
-    output_dir = os.path.join(project_root, "output")
-    os.makedirs(output_dir, exist_ok=True)
-
-    # Beispielbild laden und in Grauwert-Array umwandeln
-    img_path = os.path.join(project_root, "Data", "N2DH-GOWT1", "img", "t01.tif")
-    pil_img = Image.open(img_path).convert("L")
-    img_arr = np.array(pil_img)
-
-    # Globalen Otsu anwenden
-    binary = apply_global_otsu(img_arr)
-
-    # Schwellenwert ermitteln (nur zur Anzeige)
-    hist, _ = compute_gray_histogram(img_arr)
-    p = hist / hist.sum()
-    t = otsu_threshold(p)
-    print(f"Berechneter Otsu-Schwellenwert: {t}")
-
-    # Binärbild (0/255) speichern
-    binary_uint8 = binary * 255
-    out_path = os.path.join(output_dir, "t01_binary.png")
-    Image.fromarray(binary_uint8).save(out_path)
-    print(f"Binärbild gespeichert unter: {out_path}")
-
-    # Original- und Ergebnisbild anzeigen
-    plt.figure(figsize=(5,5))
-    plt.imshow(img_arr, cmap="gray")
-    plt.title("Original Grauwertbild")
-    plt.axis("off")
-
-    plt.figure(figsize=(5,5))
-    plt.imshow(binary, cmap="gray")
-    plt.title(f"Global Otsu Binärbild (t={t})")
-    plt.axis("off")
-
-    plt.show()

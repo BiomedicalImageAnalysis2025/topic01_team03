@@ -1,7 +1,6 @@
 from skimage.io import imread
 from skimage.filters import threshold_otsu  # otsu-global pakage
 import time
-import os
 
 
 # skimage Otsu-Global
@@ -16,7 +15,7 @@ otsu_gt = (ground_truth > 0).astype(int).flatten()  # gt binary & 1D
 
 zeiten = []
 
-for i in range(1000):
+for i in range(10000):
     start = time.perf_counter()
 
     def dice_score(otsu_img, otsu_gt):
@@ -48,6 +47,6 @@ for i in range(1000):
     ende = time.perf_counter()
     zeiten.append(ende - start)
 
-mittelwert = sum(zeiten) / len(zeiten)
+mean = sum(zeiten) / len(zeiten)
 
-print(f"Dice_Score_v1.py Durchschnittliche Laufzeit: {mittelwert:.10f} Sekunden")
+print(f"Dice_Score_v1.py mean Duration: {mean:.10f} Sekunden")
