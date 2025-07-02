@@ -26,7 +26,7 @@ imgs_NIH3T3, gts_NIH3T3, img_paths_NIH3T3, gt_paths_NIH3T3 = load_nih3t3_images(
 
 # --------------------------------------------------------------
 
-def calculate_dice_scores_OP(imgs, gts):
+def calculate_O_dice_scores_OP(imgs, gts):
     """
     Binarize the images using Otsu's threshold and compute the Dice-score
     against the corresponding ground-truth masks.
@@ -53,9 +53,9 @@ def calculate_dice_scores_OP(imgs, gts):
 
 # --------------------------------------------------------------
 # Compute the Dice-scores for all datasets
-dice_gowt1 = calculate_dice_scores_OP(imgs_N2DH_GOWT1, gts_N2DH_GOWT1)
-dice_hela = calculate_dice_scores_OP(imgs_N2DL_HeLa, gts_N2DL_HeLa)
-dice_nih = calculate_dice_scores_OP(imgs_NIH3T3, gts_NIH3T3)
+dice_gowt1 = calculate_O_dice_scores_OP(imgs_N2DH_GOWT1, gts_N2DH_GOWT1)
+dice_hela = calculate_O_dice_scores_OP(imgs_N2DL_HeLa, gts_N2DL_HeLa)
+dice_nih = calculate_O_dice_scores_OP(imgs_NIH3T3, gts_NIH3T3)
 
 # Convert numpy types to plain float
 dice_gowt1 = [float(scores) for scores in dice_gowt1]

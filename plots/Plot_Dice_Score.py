@@ -36,46 +36,63 @@ our_dice_scores =       [0.5705017182130584, 0.32258217915948406, 0.568002229254
 a = package_dice_scores == our_dice_scores
 print("Dice scores identical to reference:", a)
 
-# Compute linear regression parameters
+# Regressionsparameter
 slope, intercept = np.polyfit(our_dice_scores, package_dice_scores, 1)
 
-# Create figure
+# Punkte mit Farbe bestimmen
+colors = []
+for x, y in zip(our_dice_scores, package_dice_scores):
+    if np.isclose(y, x):
+        colors.append("blue")
+    elif y > x:
+        colors.append("red")
+    else:
+        colors.append("green")
+
+# DataFrame für seaborn
+import pandas as pd
+df = pd.DataFrame({
+    "OurDice": our_dice_scores,
+    "PackageDice": package_dice_scores,
+    "Color": colors
+})
+
+# Figure
 plt.figure(figsize=(8, 6))
 
-for x, y in zip(our_dice_scores, package_dice_scores):
-    if np.isclose(y, x):         # zuerst prüfen, ob y gleich x (innerhalb Toleranz)
-        color = "blue"
-    elif y > x:
-        color = "red"
-    else:
-        color = "green"
-    plt.scatter(x, y, color=color)
+# Punkte plotten
+sns.scatterplot(
+    data=df,
+    x="OurDice",
+    y="PackageDice",
+    hue="Color",
+    palette={"red": "red", "green": "green", "blue": "blue"},
+    legend=False,
+    s=50
+)
 
-
-# Regression line
+# Regression
 x_fit = np.linspace(min(our_dice_scores), max(package_dice_scores), 100)
 y_fit = slope * x_fit + intercept
-plt.plot(x_fit, y_fit, color="orange", linestyle="-", label="Regression")
+sns.lineplot(x=x_fit, y=y_fit, color="orange", label="Regression", linestyle="-")
 
-# Identity line (y = x)
+# Linie y=x
 min_val, max_val = min(min(our_dice_scores), min(package_dice_scores)), max(max(our_dice_scores), max(package_dice_scores))
-plt.plot([min_val, max_val], [min_val, max_val], color="black", linestyle="--", label="y = x")
+sns.lineplot(x=[min_val, max_val], y=[min_val, max_val], color="black", linestyle="--", label="y = x")
 
-# Regression equation annotation
-#equation = f"y = {slope:.2f} x + {intercept:.2f}"
-#plt.text(0.05, 0.95, f"Gradient: {slope:.2f}\n{equation}",
- #        ha="left", va="top", transform=plt.gca().transAxes,
-  #       fontsize=12, bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.7))
+# Annotation
+equation = f"y = {slope:.2f} x + {intercept:.2f}"
+plt.text(0.05, 0.95, f"Gradient: {slope:.2f}\n{equation}",
+         ha="left", va="top", transform=plt.gca().transAxes,
+         fontsize=12, bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.7))
 
-# Axes labels and title
+# Labels und Titel
 plt.xlabel("Our Dice Score")
 plt.ylabel("Package Dice Score")
 plt.title("Package Dice Score vs. Our Dice Score\n(using our Otsu Global)")
-
 plt.grid(True, linestyle="--", alpha=0.5)
 plt.legend()
 
-# Show plot
 plt.show()
 
 # Interpretation based on regression line relative to y=x
