@@ -2,11 +2,10 @@ import numpy as np
 import os
 import sys
 
-# Determine the script directory and project root for robust relative imports
-script_dir = os.path.dirname(os.path.realpath(__file__))
-project_root = os.path.abspath(os.path.join(script_dir, ".."))  # one level above 'plots'
+# add project root
+script_dir = os.getcwd()
+project_root = os.path.abspath(script_dir)
 
-# Add the project root to the system path for consistent relative imports
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
