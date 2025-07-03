@@ -64,6 +64,6 @@ dice_hela = [float(score) for score in dice_hela]
 dice_nih = [float(score) for score in dice_nih]
 
 # Print scores in a readable format
-print("GOWT1 Scores =", [f"{score}" for score in dice_gowt1])
-print("HeLa Scores =", [f"{score}" for score in dice_hela])
-print("NIH3T3 Scores =", [f"{score}" for score in dice_nih])
+print("GOWT1_Scores =", ", ".join(f"{score}" for score in dice_gowt1))
+print("HeLa_Scores =", ", ".join(f"{score}" for score in dice_hela))
+print("NIH3T3_Scores =", ", ".join(f"{score}" for score in dice_nih))
