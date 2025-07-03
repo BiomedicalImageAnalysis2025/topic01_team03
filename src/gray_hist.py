@@ -1,4 +1,4 @@
-# gray_hist.py
+# src/gray_hist.py
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -12,19 +12,27 @@ def compute_gray_histogram(
     value_range: Tuple[int, int] = (0, 255)
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Liest ein Bild ein (Pfad oder NumPy-Array), wandelt in Graustufen um und
-    berechnet das Histogramm.
+    Loads an image (from a file path or directly as a NumPy array), converts it to grayscale if necessary,
+    and computes its histogram over the specified value range.
+
+    This function allows for direct analysis of image intensity distributions, which can be
+    essential for thresholding algorithms and quantitative assessments of grayscale images.
 
     Args:
-        image_source: Pfad (Path/str) zum Bild ODER ein 2D-NumPy-Array mit Grauwerten.
-        bins: Anzahl der Bins für das Histogramm.
-        value_range: Wertebereich (min, max).
+        image_source (Path | str | np.ndarray): Either a file path to the image or a 2D NumPy array containing
+                                               grayscale pixel values.
+        bins (int, optional): Number of bins to use when computing the histogram (default: 256).
+        value_range (Tuple[int, int], optional): Value range to cover in the histogram, typically [0, 255] 
+                                                 for 8-bit grayscale images (default: (0, 255)).
 
     Returns:
-        hist: Array der Pixelhäufigkeiten pro Bin.
-        bin_edges: Randwerte der Bins.
+        hist (np.ndarray): The computed histogram, containing pixel frequencies per bin.
+        bin_edges (np.ndarray): The edges of the histogram bins, which can be used for plotting.
+
+    Raises:
+        TypeError: If `image_source` is neither a file path nor a NumPy array.
     """
-    # 1) Input erkennen und in Grauwert-Array umwandeln
+    # Recognize input type and convert to grayscale array if necessary
     if isinstance(image_source, (Path, str)):
         img = Image.open(str(image_source)).convert("L")
         arr = np.array(img)
@@ -32,10 +40,10 @@ def compute_gray_histogram(
         arr = image_source
     else:
         raise TypeError(
-            "compute_gray_histogram erwartet einen Pfad (Path/str) oder ein NumPy-Array."
+            "compute_gray_histogram expects a file path (Path or str) or a NumPy array as input."
         )
 
-    # 2) Histogramm berechnen
+    # Compute histogram over the flattened grayscale array
     hist, bin_edges = np.histogram(
         arr.ravel(),
         bins=bins,
@@ -46,7 +54,14 @@ def compute_gray_histogram(
 
 def plot_gray_histogram(hist: np.ndarray, bin_edges: np.ndarray):
     """
-    Plottet ein Grauwert-Histogramm anhand von hist und bin_edges.
+    Plots a grayscale histogram using the provided histogram frequencies and bin edges.
+
+    This visualization enables intuitive assessment of pixel intensity distributions,
+    which is particularly useful for evaluating image contrast and thresholding behavior.
+
+    Args:
+        hist (np.ndarray): Histogram frequencies per bin.
+        bin_edges (np.ndarray): The edges of the histogram bins, matching the output from compute_gray_histogram().
     """
     plt.figure(figsize=(8, 4))
     plt.bar(
@@ -55,4 +70,9 @@ def plot_gray_histogram(hist: np.ndarray, bin_edges: np.ndarray):
         width=bin_edges[1] - bin_edges[0],
         align='edge'
     )
-    plt.t
+    plt.xlabel("Pixel intensity")
+    plt.ylabel("Frequency")
+    plt.title("Grayscale Histogram")
+    plt.grid(True, linestyle='--', alpha=0.5)
+    plt.tight_layout()
+    plt.show()
