@@ -4,7 +4,7 @@ import sys
 from skimage.filters import threshold_multiotsu
 from skimage import img_as_ubyte
 
-# Project root hinzufügen
+# add project root
 script_dir = os.getcwd()
 project_root = os.path.abspath(script_dir)
 

@@ -2,9 +2,9 @@ import os
 import sys
 from medpy.metric import binary
 
-# Add project root to sys.path for imports from src/
-script_dir = os.path.dirname(os.path.realpath(__file__))
-project_root = os.path.abspath(os.path.join(script_dir, "..", "..", ".."))  # three levels above 'Method_Comparison'
+# add project root
+script_dir = os.getcwd()
+project_root = os.path.abspath(script_dir)
 
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
@@ -60,6 +60,6 @@ dice_hela = [float(score) for score in dice_hela]
 dice_nih = [float(score) for score in dice_nih]
 
 # Print Dice scores in a clear format
-print("GOWT1 Scores =", ", ".join(f"{score}" for score in dice_gowt1))
-print("HeLa Scores =", ", ".join(f"{score}" for score in dice_hela))
-print("NIH3T3 Scores =", ", ".join(f"{score}" for score in dice_nih))
+print("GOWT1_Scores =", ", ".join(f"{score}" for score in dice_gowt1))
+print("HeLa_Scores =", ", ".join(f"{score}" for score in dice_hela))
+print("NIH3T3_Scores =", ", ".join(f"{score}" for score in dice_nih))
