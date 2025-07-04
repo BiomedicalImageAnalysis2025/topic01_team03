@@ -1,7 +1,7 @@
 import numpy as np
 
-# Gamma transformation
-def gammatransformation(image, gamma=None):
+# Gamma correction
+def gammacorrection(image, gamma=None):
    """
     Every pixel value p is transformed by p^gamma.
 
