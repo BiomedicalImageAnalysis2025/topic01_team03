@@ -207,3 +207,73 @@ def plot_pairwise_scores(
     plt.legend()
     plt.tight_layout()
     plt.show()
+
+
+#SPAGHETTI PLOT WITH 3 VECTORS
+
+def plot_triplet_scores(
+    x_positions: Sequence,
+    scores1: Sequence,
+    scores2: Sequence,
+    scores3: Sequence,
+    labels: Sequence[str],
+    title: str = "Comparison of 3 Methods",
+    xlabel: str = "Files",
+    ylabel: str = "Dice Score",
+    legend_labels: tuple[str, str, str] = ("Method 1", "Method 2", "Method 3"),
+    figsize: tuple[int, int] = (10, 6)
+):
+    """
+    Plot triplet scores with connecting lines for each file.
+
+    Parameters:
+    - x_positions: x-axis positions (e.g. [0, 1, 2, ...])
+    - scores1: Dice scores for method 1
+    - scores2: Dice scores for method 2
+    - scores3: Dice scores for method 3
+    - labels: Labels for x-ticks (usually file names)
+    - title, xlabel, ylabel: Titles for plot and axes
+    - legend_labels: Tuple with labels for the three methods
+    - figsize: Size of figure in inches
+    """
+    plt.figure(figsize=figsize)
+    plt.scatter(x_positions, scores1, color='C0', label=legend_labels[0])
+    plt.scatter(x_positions, scores2, color='C1', label=legend_labels[1])
+    plt.scatter(x_positions, scores3, color='C2', label=legend_labels[2])
+
+    # Draw connecting lines per file
+    for xi, y1, y2, y3 in zip(x_positions, scores1, scores2, scores3):
+        plt.plot([xi, xi, xi], [y1, y2, y3], color='gray', alpha=0.5)
+
+    plt.xticks(x_positions, labels, rotation=45, ha='right')
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+
+
+# GRAY VALUE HISTOGRAM
+
+def plot_gray_histogram(image: np.ndarray, bins: int = 256, title: str = "Gray Value Histogram") -> None:
+    """
+    Plots the histogram of a grayscale image.
+
+    Parameters:
+        image (np.ndarray): 2D array representing a grayscale image.
+        bins (int): Number of bins in the histogram (default: 256).
+        title (str): Title for the histogram plot.
+    """
+    if image.ndim != 2:
+        raise ValueError("Input must be a 2D grayscale image.")
+
+    plt.figure(figsize=(8, 5))
+    plt.hist(image.ravel(), bins=bins, range=[0, 255], color='gray', edgecolor='black')
+    plt.title(title)
+    plt.xlabel("Gray Value")
+    plt.ylabel("Frequency")
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
