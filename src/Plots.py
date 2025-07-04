@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from typing import Sequence
 import seaborn as sns
 import pandas as pd
 
@@ -164,3 +165,45 @@ def scatterplot_without_regression(
     # Ergebnis der Regression ausgeben
     print(f"Slope: {slope:.2f}, Intercept: {intercept:.2f}")
     return slope, intercept
+
+
+# SPAGHETTI PLOT WITH 2 VECTORS
+def plot_pairwise_scores(
+    x_positions: Sequence,
+    scores1: Sequence,
+    scores2: Sequence,
+    labels: Sequence[str],
+    title: str = "Comparison of Methods",
+    xlabel: str = "Files",
+    ylabel: str = "Dice Score",
+    legend_labels: tuple[str, str] = ("Method 1", "Method 2"),
+    figsize: tuple[int, int] = (10, 6)
+):
+    """
+    Plot paired scores with connecting lines for comparison.
+
+    Parameters:
+    - x_positions: positions along x-axis (e.g., [0, 1, 2, ...])
+    - scores1: first set of scores (e.g., without mean filter)
+    - scores2: second set of scores (e.g., with mean filter)
+    - labels: tick labels for x-axis (e.g., file names)
+    - file_labels: repeated list of same labels, if needed (optional)
+    - title, xlabel, ylabel: plot text labels
+    - legend_labels: labels shown in legend for the two datasets
+    - figsize: figure size in inches
+    """
+    plt.figure(figsize=figsize)
+    plt.scatter(x_positions, scores1, color='C0', label=legend_labels[0])
+    plt.scatter(x_positions, scores2, color='C1', label=legend_labels[1])
+
+    # Connect each pair of points
+    for xi, y1, y2 in zip(x_positions, scores1, scores2):
+        plt.plot([xi, xi], [y1, y2], color='gray', alpha=0.5)
+
+    plt.xticks(x_positions, labels, rotation=45, ha='right')
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()

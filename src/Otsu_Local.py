@@ -10,7 +10,7 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 # Import the global Otsu implementation from the project source
-from src.Complete_Otsu_Global import otsu_threshold_skimage_like
+from Complete_Otsu_Global import otsu_threshold_skimage_like
 
 def local_otsu(image: np.ndarray, radius: int = 15) -> np.ndarray:
     """
