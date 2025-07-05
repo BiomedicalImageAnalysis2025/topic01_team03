@@ -1,18 +1,7 @@
-import numpy as np
-import os
-import sys
 from skimage.filters import threshold_multiotsu
 from skimage import img_as_ubyte
+import numpy as np
 
-# add project root
-script_dir = os.getcwd()
-project_root = os.path.abspath(script_dir)
-
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
-
-
-from src.imread_all import load_nih3t3_images
 from src.Dice_Score import dice_score
 
 # ------------------- Multi-Otsu-basierte Maske -------------------
@@ -38,18 +27,3 @@ def calculate_multiotsu_dice_scores(imgs, gts):
         gt_binary = gt > 0
         scores.append(dice_score(mask, gt_binary))
     return scores
-
-# ------------------- Bilder laden -------------------
-
-imgs_NIH3T3, gts_NIH3T3, *_ = load_nih3t3_images()
-
-# ------------------- Dice-Scores berechnen -------------------
-
-dice_nih   = calculate_multiotsu_dice_scores(imgs_NIH3T3, gts_NIH3T3)
-
-# Als normale Floats ausgeben
-dice_nih   = [float(score) for score in dice_nih]
-
-# Ergebnisse ausgeben
-
-print("NIH3T3_Scores =", ", ".join(f"{score}" for score in dice_nih))

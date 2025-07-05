@@ -10,12 +10,6 @@ project_root = os.path.abspath(script_dir)
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-    import importlib
-
-import src.Dice_Score
-
-
-importlib.reload(src.Dice_Score)
 
 # Imports from project-specific src/ directory
 from src.imread_all import load_n2dh_gowt1_images, load_n2dl_hela_images, load_nih3t3_images

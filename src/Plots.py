@@ -76,10 +76,6 @@ def scatterplot_with_regression(
     plt.grid(True, linestyle="--", alpha=0.5)
     plt.legend()
     plt.show()
-    
-    # Ergebnis der Regression ausgeben
-    print(f"Slope: {slope:.2f}, Intercept: {intercept:.2f}")
-    return slope, intercept
 
 #------------------------------------------------------------------------------------------------
 # example for usage
@@ -99,16 +95,15 @@ def scatterplot_without_regression(
     package_scores, 
     xlabel="Score 1 (ours)", 
     ylabel="Score 2 (reference)", 
-    title="Title"
+    title="Title",
+    label_red="Package > Ours",
+    label_green="Ours > Package",
+    label_blue="Scores ~ equal"
 ):
     """
-    Vergleicht zwei gleichgroße Vektoren mit Dice-Scores durch Scatterplot + Regression.
+    Vergleicht zwei gleichgroße Vektoren mit Dice-Scores durch Scatterplot + optionale Beschreibung.
     
-    - our_scores: Liste oder numpy-Array mit unseren Dice-Scores
-    - package_scores: Liste oder numpy-Array mit Referenz-Dice-Scores
-    - xlabel: Beschriftung für die x-Achse
-    - ylabel: Beschriftung für die y-Achse
-    - title: Plot-Titel
+    Zusätzlich werden Dummy-Punkte mit Erklärungen direkt im Plot angezeigt.
     """
     our_scores = np.array(our_scores)
     package_scores = np.array(package_scores)
@@ -116,10 +111,8 @@ def scatterplot_without_regression(
     if len(our_scores) != len(package_scores):
         raise ValueError("Beide Vektoren müssen gleich lang sein!")
     
-    # Regression
     slope, intercept = np.polyfit(our_scores, package_scores, 1)
     
-    # Farben basierend auf Vergleich
     colors = []
     for x, y in zip(our_scores, package_scores):
         if np.isclose(y, x):
@@ -129,14 +122,12 @@ def scatterplot_without_regression(
         else:
             colors.append("green")
     
-    # DataFrame für seaborn
     df = pd.DataFrame({
         "Score 1": our_scores,
         "Score 2": package_scores,
         "Color": colors
     })
     
-    # Scatterplot
     plt.figure(figsize=(8, 6))
     sns.scatterplot(
         data=df,
@@ -148,23 +139,29 @@ def scatterplot_without_regression(
         s=50
     )
     
-    # Identitätslinie y=x
     min_val, max_val = min(np.min(our_scores), np.min(package_scores)), max(np.max(our_scores), np.max(package_scores))
     sns.lineplot(x=[min_val, max_val], y=[min_val, max_val], color="black", linestyle="--", label="y = x")
     
-    # Manuelle Achsenbeschriftung und Titel
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
     
-    # Sonstiges
-    plt.grid(True, linestyle="--", alpha=0.5)
-    plt.legend()
-    plt.show()
+    # Dummy-Punkte und Erklärung unter der Legende:
+    x_legend = min_val + 0.05 * (max_val - min_val)
+    y_base = min_val - 0.1 * (max_val - min_val)  # Etwas unterhalb des Plots
     
-    # Ergebnis der Regression ausgeben
-    print(f"Slope: {slope:.2f}, Intercept: {intercept:.2f}")
-    return slope, intercept
+    plt.scatter([x_legend], [y_base], color="red", s=50)
+    plt.text(x_legend + 0.02, y_base, label_red, va="center", fontsize=10)
+    
+    plt.scatter([x_legend + 0.2], [y_base], color="green", s=50)
+    plt.text(x_legend + 0.22, y_base, label_green, va="center", fontsize=10)
+    
+    plt.scatter([x_legend + 0.4], [y_base], color="blue", s=50)
+    plt.text(x_legend + 0.42, y_base, label_blue, va="center", fontsize=10)
+    
+    plt.grid(True, linestyle="--", alpha=0.5)
+    plt.tight_layout()
+    plt.show()
 
 
 # SPAGHETTI PLOT WITH 2 VECTORS
