@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import sys
+from skimage.util import view_as_windows
 
 # add project root
 script_dir = os.getcwd()
@@ -50,5 +51,31 @@ def local_otsu(image: np.ndarray, radius: int = 15) -> np.ndarray:
             block = padded[i : i + w, j : j + w]
             t = otsu_threshold_skimage_like(block)  # compute threshold directly on original intensity values
             t_map[i, j] = t
+
+    return t_map
+
+
+
+# Defining a quicker otsu local for less computational load
+def local_otsu_fast(image: np.ndarray, radius: int = 15) -> np.ndarray:
+    """
+    Efficient local Otsu threshold map using skimage's view_as_windows.
+    """
+    H, W = image.shape
+    w = 2 * radius + 1
+
+    # Reflektiertes Padding, um Randverluste zu vermeiden
+    padded = np.pad(image, pad_width=radius, mode="reflect")
+
+    # Erzeuge gleitende Fensteransichten (shape: (H, W, w, w))
+    windows = view_as_windows(padded, (w, w))
+
+    # Wende threshold_otsu auf jedes (w, w)-Fenster an → vektorisiert über (H, W)
+    H_new, W_new = windows.shape[:2]
+    t_map = np.empty((H_new, W_new), dtype=image.dtype)
+
+    for i in range(H_new):
+        for j in range(W_new):
+            t_map[i, j] = otsu_threshold_skimage_like(windows[i, j])
 
     return t_map
