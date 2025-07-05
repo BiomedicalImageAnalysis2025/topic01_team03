@@ -1,5 +1,8 @@
 import os
 import sys
+from medpy.metric import binary
+from skimage.filters import threshold_otsu
+
 
 # add project root
 script_dir = os.getcwd()
@@ -98,4 +101,57 @@ def calculate_dice_scores_local_package(imgs, gts):
         score = dice_score(otsu_img, gt_binary)
         scores.append(score)
 
+    return scores
+
+def calculate_package_dice_scores(imgs, gts):
+    """
+    Calculates Dice scores between Otsu-thresholded images and ground-truth masks using
+    the medpy.metric Dice implementation (package Dice Score).
+
+    Args:
+        imgs (list[np.ndarray]): List of input grayscale images.
+        gts (list[np.ndarray]): Corresponding ground-truth binary masks.
+
+    Returns:
+        list[float]: Calculated Dice scores.
+    """
+    scores = []
+    for img, gt in zip(imgs, gts):
+        # Compute Otsu threshold
+        t = otsu_threshold_skimage_like(img)
+
+        # Binarize the input image with the computed threshold
+        otsu_img = img > t
+
+        # Binarize the ground-truth mask
+        gt_binary = gt > 0
+
+        # Compute Dice score using medpy's implementation
+        score = binary.dc(otsu_img, gt_binary)
+        scores.append(score)
+    return scores
+
+def calculate_dice_scores_otsu_package(imgs, gts):
+    """
+    Binarizes each image using skimage's global Otsu threshold and computes the Dice score
+    against the corresponding ground-truth mask.
+
+    Args:
+        imgs (list[np.ndarray]): List of grayscale input images.
+        gts (list[np.ndarray]): Corresponding ground-truth masks.
+
+    Returns:
+        list[float]: Dice scores for each image/ground-truth pair.
+    """
+    scores = []
+    for img, gt in zip(imgs, gts):
+        # Binarize image using global Otsu threshold
+        otsu_img = img > threshold_otsu(img)
+
+        # Ensure ground-truth is binary
+        gt_binary = gt > 0
+
+        # Compute Dice score
+        score = dice_score(otsu_img, gt_binary)
+        scores.append(score)
     return scores
