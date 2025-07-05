@@ -52,3 +52,31 @@ def local_otsu(image: np.ndarray, radius: int = 15) -> np.ndarray:
             t_map[i, j] = t
 
     return t_map
+
+from skimage import util
+from skimage.filters import rank, threshold_otsu
+from skimage.morphology import footprint_rectangle
+
+# Defining a quicker otsu local for less computational load
+def local_otsu_fast(image: np.ndarray, radius: int = 15) -> np.ndarray:
+    """
+    Efficient local Otsu threshold map.
+
+    Args:
+        image: 2D grayscale array (float or int).
+        radius: local neighborhood radius.
+
+    Returns:
+        threshold_map: same shape and dtype as input, per-pixel Otsu thresholds.
+    """
+    # Must be uint8 for rank filters
+    img_u8 = util.img_as_ubyte(image)
+
+    # Define local neighborhood
+    selem = footprint_rectangle((2*radius+1, 2*radius+1))
+
+    # Compute local thresholds (C-optimized)
+    local_thresh = rank.otsu(img_u8, selem)
+
+    # Convert thresholds back to same dtype as input
+    return local_thresh.astype(image.dtype)
