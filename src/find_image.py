@@ -26,6 +26,6 @@ def find_and_load_image(filename: str,
     raise FileNotFoundError(f"{filename!r} nicht gefunden unter {data_root!r}")
 
 # Beispielnutzung:
-if __name__ == "__main__":
-    img = find_and_load_image("t01.tif")
-    print("Shape:", img.shape, "Min/Max:", img.min(), img.max())
+#if __name__ == "__main__":
+#    img = find_and_load_image("t01.tif")
+#    print("Shape:", img.shape, "Min/Max:", img.min(), img.max())
