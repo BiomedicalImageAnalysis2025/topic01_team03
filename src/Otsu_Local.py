@@ -1,9 +1,7 @@
 import numpy as np
 import os
 import sys
-from skimage import util
-from skimage.filters import rank, threshold_otsu
-from skimage.morphology import footprint_rectangle
+from skimage.util import view_as_windows
 
 # add project root
 script_dir = os.getcwd()
@@ -59,25 +57,25 @@ def local_otsu(image: np.ndarray, radius: int = 15) -> np.ndarray:
 
 
 # Defining a quicker otsu local for less computational load
-def local_otsu_fast(image: np.ndarray, radius: int = 15) -> np.ndarray:
+def local_otsu(image: np.ndarray, radius: int = 15) -> np.ndarray:
     """
-    Efficient local Otsu threshold map.
-
-    Args:
-        image: 2D grayscale array (float or int).
-        radius: local neighborhood radius.
-
-    Returns:
-        threshold_map: same shape and dtype as input, per-pixel Otsu thresholds.
+    Efficient local Otsu threshold map using skimage's view_as_windows.
     """
-    # Must be uint8 for rank filters
-    img_u8 = util.img_as_ubyte(image)
+    H, W = image.shape
+    w = 2 * radius + 1
 
-    # Define local neighborhood
-    selem = footprint_rectangle((2*radius+1, 2*radius+1))
+    # Reflektiertes Padding, um Randverluste zu vermeiden
+    padded = np.pad(image, pad_width=radius, mode="reflect")
 
-    # Compute local thresholds (C-optimized)
-    local_thresh = rank.otsu(img_u8, selem)
+    # Erzeuge gleitende Fensteransichten (shape: (H, W, w, w))
+    windows = view_as_windows(padded, (w, w))
 
-    # Convert thresholds back to same dtype as input
-    return local_thresh.astype(image.dtype)
+    # Wende threshold_otsu auf jedes (w, w)-Fenster an → vektorisiert über (H, W)
+    H_new, W_new = windows.shape[:2]
+    t_map = np.empty((H_new, W_new), dtype=image.dtype)
+
+    for i in range(H_new):
+        for j in range(W_new):
+            t_map[i, j] = otsu_threshold_skimage_like(windows[i, j])
+
+    return t_map
