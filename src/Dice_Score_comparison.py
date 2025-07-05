@@ -22,6 +22,7 @@ from src.Complete_Otsu_Global import otsu_threshold_skimage_like
 from src.Otsu_Local import local_otsu
 from src.Dice_Score import dice_score
 from skimage.filters import threshold_local
+from src.pre_processing import gammacorrection
 
 def calculate_dice_scores_global(imgs, gts):
     """
@@ -155,3 +156,35 @@ def calculate_dice_scores_otsu_package(imgs, gts):
         score = dice_score(otsu_img, gt_binary)
         scores.append(score)
     return scores
+
+def calculate_dice_scores_gamma_global(imgs: list, gts: list) -> list:
+    """
+    Process all images and corresponding ground truths to compute a list of Dice scores.
+
+    Args:
+        imgs (list of np.ndarray): Grayscale input images.
+        gts (list of np.ndarray): Corresponding ground-truth masks.
+
+    Returns:
+        dice_scores (list of float): Dice scores for each image-groundtruth pair.
+    """
+    dice_scores = []
+
+    for img, gt in zip(imgs, gts):
+        # Skalieren des Bildes (optional, je nach Anwendung)
+        img_scaled = (img / img.max() * 255).astype('uint8')
+
+        # Groundtruth binarisieren (invertiert)
+        gt_bin = 1 - ((gt / gt.max() * 255).astype('uint8') == 0)
+
+        # Gamma-Transformation
+        img_gamma = gammacorrection(img, gamma=0.6)
+
+        # Globale Otsu-Segmentierung
+        binary1 = otsu_threshold_skimage_like(img_gamma)
+
+        # Dice Score berechnen
+        score = dice_score(binary1.flatten(), gt_bin.flatten())
+        dice_scores.append(score)
+
+    return dice_scores

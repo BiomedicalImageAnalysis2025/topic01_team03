@@ -189,6 +189,7 @@ def plot_pairwise_scores(
     - legend_labels: labels shown in legend for the two datasets
     - figsize: figure size in inches
     """
+    
     plt.figure(figsize=figsize)
     plt.scatter(x_positions, scores1, color='C0', label=legend_labels[0])
     plt.scatter(x_positions, scores2, color='C1', label=legend_labels[1])
