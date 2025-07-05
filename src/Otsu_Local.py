@@ -105,3 +105,4 @@ def local_otsu_fast_package(image: np.ndarray, radius: int = 15) -> np.ndarray:
             t_map[i, j] = threshold_otsu(windows[i, j])
 
     return t_map
+
