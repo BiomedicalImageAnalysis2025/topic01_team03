@@ -57,7 +57,7 @@ def local_otsu(image: np.ndarray, radius: int = 15) -> np.ndarray:
 
 
 # Defining a quicker otsu local for less computational load
-def local_otsu(image: np.ndarray, radius: int = 15) -> np.ndarray:
+def local_otsu_fast(image: np.ndarray, radius: int = 15) -> np.ndarray:
     """
     Efficient local Otsu threshold map using skimage's view_as_windows.
     """
