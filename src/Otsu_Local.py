@@ -1,8 +1,9 @@
 import numpy as np
 import os
 import sys
-from skimage.util import view_as_windows
-from skimage.filters import threshold_otsu
+from skimage import util
+from skimage.filters import rank
+from skimage.morphology import disk
 
 # add project root
 script_dir = os.getcwd()
@@ -60,49 +61,23 @@ def local_otsu(image: np.ndarray, radius: int = 15) -> np.ndarray:
 # Defining a quicker otsu local for less computational load
 def local_otsu_fast(image: np.ndarray, radius: int = 15) -> np.ndarray:
     """
-    Efficient local Otsu threshold map using skimage's view_as_windows.
+    Efficient local Otsu threshold map.
+
+    Args:
+        image: 2D grayscale array (float or int).
+        radius: local neighborhood radius.
+
+    Returns:
+        threshold_map: same shape and dtype as input, per-pixel Otsu thresholds.
     """
-    H, W = image.shape
-    w = 2 * radius + 1
+    # Must be uint8 for rank filters
+    img_u8 = util.img_as_ubyte(image)
 
-    # Reflektiertes Padding, um Randverluste zu vermeiden
-    padded = np.pad(image, pad_width=radius, mode="reflect")
+    # Define local neighborhood
+    selem = disk(radius)
 
-    # Erzeuge gleitende Fensteransichten (shape: (H, W, w, w))
-    windows = view_as_windows(padded, (w, w))
+    # Compute local thresholds (C-optimized)
+    local_thresh = rank.otsu(img_u8, selem)
 
-    # Wende threshold_otsu auf jedes (w, w)-Fenster an → vektorisiert über (H, W)
-    H_new, W_new = windows.shape[:2]
-    t_map = np.empty((H_new, W_new), dtype=image.dtype)
-
-    for i in range(H_new):
-        for j in range(W_new):
-            t_map[i, j] = otsu_threshold_skimage_like(windows[i, j])
-
-    return t_map
-
-
-# Defining a quicker otsu local for less computational load
-def local_otsu_fast_package(image: np.ndarray, radius: int = 15) -> np.ndarray:
-    """
-    Efficient local Otsu threshold map using skimage's view_as_windows.
-    """
-    H, W = image.shape
-    w = 2 * radius + 1
-
-    # Reflektiertes Padding, um Randverluste zu vermeiden
-    padded = np.pad(image, pad_width=radius, mode="reflect")
-
-    # Erzeuge gleitende Fensteransichten (shape: (H, W, w, w))
-    windows = view_as_windows(padded, (w, w))
-
-    # Wende threshold_otsu auf jedes (w, w)-Fenster an → vektorisiert über (H, W)
-    H_new, W_new = windows.shape[:2]
-    t_map = np.empty((H_new, W_new), dtype=image.dtype)
-
-    for i in range(H_new):
-        for j in range(W_new):
-            t_map[i, j] = threshold_otsu(windows[i, j])
-
-    return t_map
-
+    # Convert thresholds back to same dtype as input
+    return local_thresh.astype(image.dtype)
