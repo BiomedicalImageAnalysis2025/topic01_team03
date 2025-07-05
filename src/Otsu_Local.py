@@ -1,6 +1,9 @@
 import numpy as np
 import os
 import sys
+from skimage import util
+from skimage.filters import rank, threshold_otsu
+from skimage.morphology import footprint_rectangle
 
 # add project root
 script_dir = os.getcwd()
@@ -53,9 +56,7 @@ def local_otsu(image: np.ndarray, radius: int = 15) -> np.ndarray:
 
     return t_map
 
-from skimage import util
-from skimage.filters import rank, threshold_otsu
-from skimage.morphology import footprint_rectangle
+
 
 # Defining a quicker otsu local for less computational load
 def local_otsu_fast(image: np.ndarray, radius: int = 15) -> np.ndarray:
