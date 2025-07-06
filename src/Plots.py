@@ -275,3 +275,76 @@ def plot_gray_histogram(image: np.ndarray, bins: int = 256, title: str = "Gray V
     plt.grid(True)
     plt.tight_layout()
     plt.show()
+
+
+
+def plot_single_grouped_boxplot(df, title, ylabel, palette="pastel", figsize=(8,6), save_path=None):
+    """
+    Erstellt einen einzelnen Boxplot, der die Werte nach 'Dataset' gruppiert.
+
+    Args:
+        df (pd.DataFrame): DataFrame mit den Spalten 'Dataset' und 'Value'.
+        title (str): Titel des Plots.
+        ylabel (str): Beschriftung der y-Achse.
+        palette (str, optional): Farbschema für Boxplots. Default: "pastel".
+        figsize (tuple, optional): Größe der Figure. Default: (8,6).
+        save_path (str, optional): Falls angegeben, wird der Plot als Bilddatei gespeichert.
+    """
+    plt.figure(figsize=figsize)
+
+    sns.boxplot(
+        x="Dataset",
+        y="Value",
+        hue="Dataset",          
+        data=df,
+        palette=palette,
+        showfliers=True,
+        legend=False            
+    )
+    sns.stripplot(
+        x="Dataset",
+        y="Value",
+        data=df,
+        color="gray",
+        alpha=0.6,
+        jitter=True,
+        size=4
+    )
+
+    plt.title(title)
+    plt.ylabel(ylabel)
+    plt.xlabel("")
+    plt.tight_layout()
+
+    if save_path:
+        plt.savefig(save_path, dpi=300)
+        print(f"Plot gespeichert unter: {save_path}")
+    else:
+        plt.show()
+
+
+
+def combine_results_to_dataframe(names, lists):
+    """
+    Kombiniert mehrere Ergebnislisten in einen einzigen DataFrame
+    mit den Spalten 'Dataset' und 'Value'.
+
+    Args:
+        names (list of str): Namen der Datasets, z.B. ["GOWT1", "HeLa", "NIH3T3"].
+        lists (list of list of float): Ergebnislisten, z.B. [[...], [...], [...]].
+
+    Returns:
+        pd.DataFrame: Gesamter DataFrame mit allen Werten.
+    """
+    if len(names) != len(lists):
+        raise ValueError("Die Länge von names und lists muss übereinstimmen!")
+
+    dfs = []
+    for name, values in zip(names, lists):
+        df = pd.DataFrame({
+            "Dataset": [name] * len(values),
+            "Value": values
+        })
+        dfs.append(df)
+
+    return pd.concat(dfs, ignore_index=True)
