@@ -307,7 +307,70 @@ def calculate_dice_scores_gamma_meanfilter_global(imgs, gts):
         img_gamma = gammacorrection(img)
 
         # meanfilter
-        img_filtered = mean_filter(img_gamma)
+        img_filtered = mean_filter(img_gamma, kernel_size=5)
+
+        # global otsu thresholding
+        t = otsu_threshold_skimage_like(img_filtered)
+        binary1 = (img_filtered > t)
+        # calculate dice score
+        score = dice_score(binary1.flatten(), gt_bin.flatten())
+        dice_scores.append(score)
+
+    return dice_scores
+
+def calculate_dice_scores_gamma_local(imgs, gts):
+    """
+    Process all images and corresponding ground truths to compute a list of Dice scores.
+
+    Args:
+        imgs (list of np.ndarray): Grayscale input images.
+        gts (list of np.ndarray): Corresponding ground-truth masks.
+
+    Returns:
+        dice_scores (list of float): Dice scores for each image-groundtruth pair.
+    """
+    dice_scores = []
+
+    for img, gt in zip(imgs, gts):
+        
+        # binarize groundtruth
+        gt_bin = 1 - ((gt / gt.max()) == 0)
+
+        # gamma correction
+        img_gamma = gammacorrection(img, gamma=0.5)
+
+        # global otsu thresholding
+        t = otsu_threshold_skimage_like(img_gamma)
+        binary1 = (img_gamma > t)
+        # calculate dice score
+        score = dice_score(binary1.flatten(), gt_bin.flatten())
+        dice_scores.append(score)
+
+    return dice_scores
+
+def calculate_dice_scores_gamma_meanfilter_local(imgs, gts):
+    """
+    Process all images and corresponding ground truths to compute a list of Dice scores.
+
+    Args:
+        imgs (list of np.ndarray): Grayscale input images.
+        gts (list of np.ndarray): Corresponding ground-truth masks.
+
+    Returns:
+        dice_scores (list of float): Dice scores for each image-groundtruth pair.
+    """
+    dice_scores = []
+
+    for img, gt in zip(imgs, gts):
+        
+        # binarize groundtruth
+        gt_bin = 1 - ((gt / gt.max()) == 0)
+
+        # gamma correction
+        img_gamma = gammacorrection(img)
+
+        # meanfilter
+        img_filtered = mean_filter(img_gamma, kernel_size=5)
 
         # global otsu thresholding
         t = otsu_threshold_skimage_like(img_filtered)
