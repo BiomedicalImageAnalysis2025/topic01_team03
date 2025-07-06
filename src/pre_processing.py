@@ -150,3 +150,4 @@ def local_wiener_filter(image, window_size=201, noise_variance=None):
     f_norm = (f - f.min()) / (f.max() - f.min())
     filtered = f_norm
     return filtered
+
