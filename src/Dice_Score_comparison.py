@@ -206,7 +206,7 @@ def calculate_dice_scores_histeq_global(imgs, gts):
         # binarize groundtruth
         gt_bin = 1 - ((gt / gt.max()) == 0)
 
-        # gamma correction
+        # histogram equalization
         img_eq = histogramequalization(img)
 
         # global otsu thresholding
@@ -236,12 +236,44 @@ def calculate_dice_scores_meanfilter_global(imgs, gts):
         # binarize groundtruth
         gt_bin = 1 - ((gt / gt.max()) == 0)
 
-        # gamma correction
+        # mean filter
         img_filtered = mean_filter(img)
 
         # global otsu thresholding
         t = otsu_threshold_skimage_like(img_filtered)
         binary1 = (img_filtered > t)
+        # calculate dice score
+        score = dice_score(binary1.flatten(), gt_bin.flatten())
+        dice_scores.append(score)
+
+    return dice_scores
+
+def calculate_dice_scores_wienerfilter_global(imgs, gts):
+    """
+    Process all images and corresponding ground truths to compute a list of Dice scores.
+
+    Args:
+        imgs (list of np.ndarray): Grayscale input images.
+        gts (list of np.ndarray): Corresponding ground-truth masks.
+
+    Returns:
+        dice_scores (list of float): Dice scores for each image-groundtruth pair.
+    """
+    dice_scores = []
+
+    for img, gt in zip(imgs, gts):
+        
+        # binarize groundtruth
+        gt_bin = 1 - ((gt / gt.max()) == 0)
+
+        # wienfilter-based background estimation and removal
+        background = local_wiener_filter(img)
+        img_wiener = img - background
+
+
+        # global otsu thresholding
+        t = otsu_threshold_skimage_like(img_wiener)
+        binary1 = (img_wiener > t)
         # calculate dice score
         score = dice_score(binary1.flatten(), gt_bin.flatten())
         dice_scores.append(score)
