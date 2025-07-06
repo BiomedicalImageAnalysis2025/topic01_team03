@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from typing import Sequence
+from typing import Sequence, Tuple
 import seaborn as sns
 import pandas as pd
+
 
 def scatterplot_with_regression(
     our_scores, 
@@ -207,8 +208,9 @@ def plot_pairwise_scores(
     plt.show()
 
 
-#SPAGHETTI PLOT WITH 3 VECTORS
 
+
+# SPAGHETTI PLOT WITH 3 VECTORS
 def plot_triplet_scores(
     x_positions: Sequence,
     scores1: Sequence,
@@ -218,26 +220,17 @@ def plot_triplet_scores(
     title: str = "Comparison of 3 Methods",
     xlabel: str = "Files",
     ylabel: str = "Dice Score",
-    legend_labels: tuple[str, str, str] = ("Method 1", "Method 2", "Method 3"),
-    figsize: tuple[int, int] = (10, 6)
+    legend_labels: Tuple[str, str, str] = ("Method 1", "Method 2", "Method 3"),
+    markers: Tuple[str, str, str] = ("o", "s", "^"),
+    figsize: Tuple[int, int] = (10, 6)
 ):
     """
-    Plot triplet scores with connecting lines for each file.
-
-    Parameters:
-    - x_positions: x-axis positions (e.g. [0, 1, 2, ...])
-    - scores1: Dice scores for method 1
-    - scores2: Dice scores for method 2
-    - scores3: Dice scores for method 3
-    - labels: Labels for x-ticks (usually file names)
-    - title, xlabel, ylabel: Titles for plot and axes
-    - legend_labels: Tuple with labels for the three methods
-    - figsize: Size of figure in inches
+    Plot triplet scores with connecting lines for each file, using different marker shapes.
     """
     plt.figure(figsize=figsize)
-    plt.scatter(x_positions, scores1, color='C0', label=legend_labels[0])
-    plt.scatter(x_positions, scores2, color='C1', label=legend_labels[1])
-    plt.scatter(x_positions, scores3, color='C2', label=legend_labels[2])
+    plt.scatter(x_positions, scores1, marker=markers[0], color='C0', label=legend_labels[0])
+    plt.scatter(x_positions, scores2, marker=markers[1], color='C1', label=legend_labels[1])
+    plt.scatter(x_positions, scores3, marker=markers[2], color='C2', label=legend_labels[2])
 
     # Draw connecting lines per file
     for xi, y1, y2, y3 in zip(x_positions, scores1, scores2, scores3):
@@ -251,6 +244,51 @@ def plot_triplet_scores(
     plt.tight_layout()
     plt.show()
 
+
+# SPAGHETTI PLOT WITH 4 VECTORS
+def plot_quadruplet_scores(
+    x_positions: Sequence,
+    scores1: Sequence,
+    scores2: Sequence,
+    scores3: Sequence,
+    scores4: Sequence,
+    labels: Sequence[str],
+    title: str = "Comparison of 4 Methods",
+    xlabel: str = "Files",
+    ylabel: str = "Dice Score",
+    legend_labels: Tuple[str, str, str, str] = ("Method 1", "Method 2", "Method 3", "Method 4"),
+    markers: Tuple[str, str, str, str] = ("o", "s", "^", "D"),
+    figsize: Tuple[int, int] = (10, 6)
+):
+    """
+    Plot quadruplet scores with connecting lines for each file, using different marker shapes.
+
+    Parameters:
+    - x_positions: x-axis positions (e.g. [0, 1, 2, ...])
+    - scores1..scores4: Dice scores for methods 1–4
+    - labels: Labels for x-ticks (usually file names)
+    - title, xlabel, ylabel: Titles for plot and axes
+    - legend_labels: Tuple with labels for the four methods
+    - markers: Tuple with marker shapes for the four methods
+    - figsize: Size of figure in inches
+    """
+    plt.figure(figsize=figsize)
+    plt.scatter(x_positions, scores1, marker=markers[0], color='C0', label=legend_labels[0])
+    plt.scatter(x_positions, scores2, marker=markers[2], color='C0', label=legend_labels[1])
+    plt.scatter(x_positions, scores3, marker=markers[0], color='C2', label=legend_labels[2])
+    plt.scatter(x_positions, scores4, marker=markers[2], color='C2', label=legend_labels[3])
+
+    # Draw connecting lines per file
+    for xi, y1, y2, y3, y4 in zip(x_positions, scores1, scores2, scores3, scores4):
+        plt.plot([xi]*4, [y1, y2, y3, y4], color='gray', alpha=0.5)
+
+    plt.xticks(x_positions, labels, rotation=45, ha='right')
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
 
 
 # GRAY VALUE HISTOGRAM
