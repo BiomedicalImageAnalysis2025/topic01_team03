@@ -1,3 +1,4 @@
+import numpy as np
 import os
 import sys
 from medpy.metric import binary
@@ -13,11 +14,16 @@ if project_root not in sys.path:
 
 
 # Import the global Otsu implementation from the project source
+import importlib
+import src.Dice_Score
+importlib.reload(src.Dice_Score)
 from src.Complete_Otsu_Global import otsu_threshold_skimage_like
 from src.Otsu_Local import local_otsu
 from src.Dice_Score import dice_score
 from src.Otsu_Local import local_otsu_package
 from src.pre_processing import gammacorrection
+
+
 
 def calculate_dice_scores_global(imgs, gts):
     """
@@ -152,7 +158,7 @@ def calculate_dice_scores_otsu_package(imgs, gts):
         scores.append(score)
     return scores
 
-def calculate_dice_scores_gamma_global(imgs: list, gts: list) -> list:
+def calculate_dice_scores_gamma_global(imgs, gts):
     """
     Process all images and corresponding ground truths to compute a list of Dice scores.
 
@@ -166,19 +172,17 @@ def calculate_dice_scores_gamma_global(imgs: list, gts: list) -> list:
     dice_scores = []
 
     for img, gt in zip(imgs, gts):
-        # Skalieren des Bildes (optional, je nach Anwendung)
-        img_scaled = (img / img.max() * 255).astype('uint8')
+        
+        # binarize groundtruth
+        gt_bin = 1 - ((gt / gt.max()) == 0)
 
-        # Groundtruth binarisieren (invertiert)
-        gt_bin = 1 - ((gt / gt.max() * 255).astype('uint8') == 0)
-
-        # Gamma-Transformation
+        # gamma correction
         img_gamma = gammacorrection(img, gamma=0.6)
 
-        # Globale Otsu-Segmentierung
-        binary1 = otsu_threshold_skimage_like(img_gamma)
-
-        # Dice Score berechnen
+        # global otsu thresholding
+        t = otsu_threshold_skimage_like(img_gamma)
+        binary1 = (img_gamma > t)
+        # calculate dice score
         score = dice_score(binary1.flatten(), gt_bin.flatten())
         dice_scores.append(score)
 
