@@ -275,8 +275,8 @@ def plot_quadruplet_scores(
     plt.figure(figsize=figsize)
     plt.scatter(x_positions, scores1, marker=markers[0], color='C0', label=legend_labels[0])
     plt.scatter(x_positions, scores2, marker=markers[2], color='C0', label=legend_labels[1])
-    plt.scatter(x_positions, scores3, marker=markers[0], color='C2', label=legend_labels[2])
-    plt.scatter(x_positions, scores4, marker=markers[2], color='C2', label=legend_labels[3])
+    plt.scatter(x_positions, scores3, marker=markers[0], color='C1', label=legend_labels[2])
+    plt.scatter(x_positions, scores4, marker=markers[2], color='C1', label=legend_labels[3])
 
     # Draw connecting lines per file
     for xi, y1, y2, y3, y4 in zip(x_positions, scores1, scores2, scores3, scores4):
