@@ -307,7 +307,7 @@ def calculate_dice_scores_gamma_meanfilter_global(imgs, gts):
         img_gamma = gammacorrection(img)
 
         # meanfilter
-        img_filtered = mean_filter(img_gamma)
+        img_filtered = mean_filter(img_gamma, radius=5)
 
         # global otsu thresholding
         t = otsu_threshold_skimage_like(img_filtered)
