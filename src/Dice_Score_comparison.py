@@ -11,17 +11,12 @@ project_root = os.path.abspath(script_dir)
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-import importlib
 
-import src.Dice_Score
-
-
-importlib.reload(src.Dice_Score)
 # Import the global Otsu implementation from the project source
 from src.Complete_Otsu_Global import otsu_threshold_skimage_like
 from src.Otsu_Local import local_otsu
 from src.Dice_Score import dice_score
-from skimage.filters import threshold_local
+from src.Otsu_Local import local_otsu_package
 from src.pre_processing import gammacorrection
 
 def calculate_dice_scores_global(imgs, gts):
@@ -91,7 +86,7 @@ def calculate_dice_scores_local_package(imgs, gts):
         list[float]: Dice scores for each image/ground-truth pair.
     """
     # Apply local Otsu thresholding
-    otsu_imgs = [img > threshold_local(img, block_size=31, offset=0) for img in imgs]
+    otsu_imgs = [img > local_otsu_package(img, radius=15) for img in imgs]
     
     # Convert ground-truth masks to binary
     gt_binaries = [gt > 0 for gt in gts]
