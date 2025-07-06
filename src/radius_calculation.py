@@ -126,3 +126,18 @@ def calculate_best_radii_and_dice1(imgs, gts, radii):
         results_radius.append(best_radius)
 
     return results_radius, results_dice
+
+def print_clean_results(all_results, all_image_paths): 
+
+    from src.imread_all import load_n2dh_gowt1_images, load_n2dl_hela_images, load_nih3t3_images
+
+    dataset_name = ["N2DH-GOWT1", "N2DL-HeLa", "NIH3T3"]
+
+    cleanresult = {}
+
+    for dataset, (rad, di), img in zip(dataset_name, all_results, all_image_paths):
+        for name, radius, dice in zip(img, rad, di):
+            filename = os.path.basename(name)
+            cleanresult.setdefault(dataset, []).append((filename, radius, dice))
+
+    return cleanresult 
