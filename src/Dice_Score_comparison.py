@@ -92,8 +92,12 @@ def calculate_dice_scores_local_package(imgs, gts, radius: int = 15):
     Returns:
         list[float]: Dice scores for each image/ground-truth pair.
     """
+
+    # Scale to 0-255
+    imgs2 = [(((img-np.min(img))/(np.max(img)-np.min(img)))*255).astype(np.uint8) for img in imgs]
+
     # Apply local Otsu thresholding
-    otsu_imgs = [img > local_otsu_package(img, radius = radius) for img in imgs]
+    otsu_imgs = [img > local_otsu_package(img, radius = radius) for img in imgs2]
     
     # Convert ground-truth masks to binary
     gt_binaries = [gt > 0 for gt in gts]
@@ -372,6 +376,9 @@ def calculate_dice_scores_gamma_meanfilter_local_package(imgs, gts, radius: int 
 
         # meanfilter
         img_filtered = mean_filter(img_gamma, kernel_size=5)
+
+        # Scale to 0-255
+        img_filtered = (((img_filtered-np.min(img_filtered))/(np.max(img_filtered)-np.min(img_filtered)))*255).astype(np.uint8)
 
         # global otsu thresholding
         t = local_otsu_package(img_filtered, radius=radius)
