@@ -184,3 +184,56 @@ Below is a list of required external libraries, including usage and installation
      - Used throughout for image data, masks, and statistical analysis.
     ```bash
     pip install numpy
+    ```
+   **Pandas (`pandas`)**
+     - Used for storing and processing result tables, CSVs, and structured image scores.
+    ```bash
+    pip install pandas
+    ```
+   **Matplotlib (`matplotlib`)**
+     - Required for plotting, visualization of segmentation, and histograms.
+     - Especially `matplotlib.pyplot` is used for image display and figure generation.
+    ```bash
+    pip install matplotlib
+    ```
+   **Seaborn (`seaborn`)**
+     - Enhances Matplotlib with aesthetically pleasing statistical visualizations (e.g., boxplots, stripplots).
+    ```bash
+    pip install seaborn
+    ```
+   **TQDM (`tqdm`)**
+     - Provides progress bars for loops and image processing steps.
+    ```bash
+    pip install tqdm
+    ```
+   **Pillow (`pillow`)**
+    - Used for image I/O (reading and saving PNG, JPEG, etc.).
+    ```bash
+    pip install pillow
+    ```
+   **scikit-image (indirectly required via `MedPy` or `SimpleITK`)**
+     - Functions like `threshold_otsu`, `img_as_ubyte`, and local/multi-Otsu methods.
+     - Already bundled into higher-level packages, but can be explicitly installed if needed:
+    ```bash
+    pip install scikit-image
+    ```
+  **OpenCV (`opencv-python`)**
+     - Used for additional image processing operations (e.g., smoothing, filtering).
+    ```bash
+    pip install opencv-python
+    ```
+   **MedPy (`medpy`)**
+     - Medical image processing package used for some image preprocessing or Dice score comparisons.
+    ```bash
+    pip install medpy
+    ```
+   **SimpleITK (`SimpleITK`)**
+     - Optional, may be used for reading 3D medical formats or additional visualization routines.
+    ```bash
+    pip install SimpleITK
+    ```
+   **imagecodecs**
+     - Provides low-level codecs for TIFF and other image types. Sometimes needed for I/O performance.
+    ```bash
+    pip install imagecodecs
+    ```
