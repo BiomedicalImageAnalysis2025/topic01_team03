@@ -5,6 +5,7 @@ from pathlib import Path
 from skimage.io import imread
 import matplotlib.pyplot as plt
 from typing import Sequence, Tuple
+from scipy.ndimage import uniform_filter
 
 # Current folder as project_root
 # add project root
@@ -17,15 +18,15 @@ importlib.reload(src.Dice_Score)
 
 
 from src.Complete_Otsu_Global import otsu_threshold_skimage_like
+from src.pre_processing import local_wiener_filter
 from src.Dice_Score import dice_score
-from src.pre_processing import mean_filter  # ensure mean_filter is imported
 from src.imread_all import (
     load_nih3t3_images,
     load_n2dl_hela_images,
     load_n2dh_gowt1_images,
 )
 
-def calculate_dice_scores_meanfilter_global(imgs, gts, s):
+def calculate_dice_scores_wienerfilter_global(imgs, gts, s):
     """
     Process all images and corresponding ground truths to compute a list of Dice scores.
 
@@ -43,12 +44,19 @@ def calculate_dice_scores_meanfilter_global(imgs, gts, s):
         # binarize groundtruth
         gt_bin = 1 - ((gt / gt.max()) == 0)
 
-        # mean filter
-        img_filtered = mean_filter(img, kernel_size=s)
+        # wiener filter background estimation and removal
+        bg= local_wiener_filter(img, window_size=s)
+        img_filtered = img-bg
+
 
         # global otsu thresholding
         t = otsu_threshold_skimage_like(img_filtered)
         binary1 = (img_filtered > t)
+
+        # invert if necessary
+        if np.mean(binary1) > 0.5:
+            binary1= ~binary1
+
         # calculate dice score
         score = dice_score(binary1.flatten(), gt_bin.flatten())
         dice_scores.append(score)
@@ -56,8 +64,8 @@ def calculate_dice_scores_meanfilter_global(imgs, gts, s):
     return dice_scores
 
 # Generic evaluation across datasets and window sizes
-def evaluate_datasets_mean_filter(
-    datasets, window_sizes: np.ndarray, output_dir: Path = Path('Dice_scores'), project_root=None
+def evaluate_datasets_wiener_filter(
+    datasets, window_sizes: np.ndarray, output_dir: Path = Path('Dice_scores')
 ) -> dict:
     """
     Runs evaluation for multiple datasets and window sizes,
@@ -72,20 +80,19 @@ def evaluate_datasets_mean_filter(
         print(f"=== Processing {name} ===")
         for s in window_sizes:
 
-         scores = calculate_dice_scores_meanfilter_global(imgs, gts, s)
+         scores = calculate_dice_scores_wienerfilter_global(imgs, gts, s)
          mean_score = float(np.mean(scores))
          print(f"window {s:2d} → Mean Dice: {mean_score:.4f}")
          means.append(mean_score)
         results[name] = np.array(means)
-        np.save(output_dir / f"{name}_dice_means_meanfilter.npy", results[name])
-        print(f"Saved {name} results to {output_dir / f'{name}_dice_means_meanfilter.npy'}\n")
+        np.save(output_dir / f"{name}_dice_means_wienerfilter.npy", results[name])
+        print(f"Saved {name} results to {output_dir / f'{name}_dice_means_wienerfilter.npy'}\n")
 
     # Combine into table: rows=window_sizes, cols=datasets order
     table = np.vstack([results[name] for name, _ in datasets]).T
-    np.save(output_dir / "all_datasets_dice_means_meanfilter.npy", table)
-    print(f"Saved combined table to {output_dir / 'all_datasets_dice_means_meanfilter.npy'}")
+    np.save(output_dir / "all_datasets_dice_means_wienerfilter.npy", table)
+    print(f"Saved combined table to {output_dir / 'all_datasets_dice_means_wienerfilter.npy'}")
     return results
-
 
 def find_best_window(all_means: np.ndarray,
                      window_sizes: Sequence[int]
@@ -113,6 +120,8 @@ def find_best_window(all_means: np.ndarray,
 
 import matplotlib.pyplot as plt
 from typing import Sequence
+
+
 
 def plot_all_datasets_means(
     all_means: np.ndarray,

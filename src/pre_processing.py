@@ -113,7 +113,7 @@ def mean_filter(image, kernel_size = 15) -> np.ndarray:
 
 
 # Wiener filter
-def local_wiener_filter(image, window_size=201, noise_variance=None):
+def local_wiener_filter(image, window_size=185, noise_variance=None):
     """
     Apply a local adaptive Wiener filter to a grayscale image.
 
@@ -147,4 +147,5 @@ def local_wiener_filter(image, window_size=201, noise_variance=None):
                 filtered[i, j] = local_mean
     
     return filtered
+
 
