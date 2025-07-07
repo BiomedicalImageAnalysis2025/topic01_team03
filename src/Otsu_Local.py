@@ -1,7 +1,7 @@
 import numpy as np
 import os
 import sys
-from skimage import util
+from skimage import img_as_ubyte
 from skimage.filters import rank
 from skimage.morphology import disk
 
@@ -71,7 +71,7 @@ def local_otsu_package(image: np.ndarray, radius: int = 15) -> np.ndarray:
         threshold_map: same shape and dtype as input, per-pixel Otsu thresholds.
     """
     # Must be uint8 for rank filters
-    img_u8 = util.img_as_ubyte(image)
+    img_u8 = img_as_ubyte(image)
 
     # Define local neighborhood
     selem = disk(radius)
