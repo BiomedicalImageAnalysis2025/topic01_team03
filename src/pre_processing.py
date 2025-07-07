@@ -145,9 +145,6 @@ def local_wiener_filter(image, window_size=201, noise_variance=None):
                 filtered[i, j] = local_mean + (local_var - noise_variance) / local_var * (image[i, j] - local_mean)
             else:
                 filtered[i, j] = local_mean
-
-    f = filtered
-    f_norm = (f - f.min()) / (f.max() - f.min())
-    filtered = f_norm
+    
     return filtered
 
