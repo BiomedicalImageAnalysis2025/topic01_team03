@@ -79,7 +79,7 @@ def calculate_dice_scores_local(imgs, gts):
         scores.append(score)
     return scores
 
-def calculate_dice_scores_local_package(imgs, gts):
+def calculate_dice_scores_local_package(imgs, gts, radius: int = 15):
     """
     Computes Dice scores by binarizing each image with skimage's local threshold method
     (threshold_local) and comparing the result to its corresponding ground-truth mask.
@@ -87,12 +87,13 @@ def calculate_dice_scores_local_package(imgs, gts):
     Args:
         imgs (list[np.ndarray]): List of grayscale input images.
         gts (list[np.ndarray]): Corresponding ground-truth masks.
+        radius (int): Radius of the local window; the window size is (2*radius + 1) x (2*radius + 1).
 
     Returns:
         list[float]: Dice scores for each image/ground-truth pair.
     """
     # Apply local Otsu thresholding
-    otsu_imgs = [img > local_otsu_package(img, radius=15) for img in imgs]
+    otsu_imgs = [img > local_otsu_package(img, radius = radius) for img in imgs]
     
     # Convert ground-truth masks to binary
     gt_binaries = [gt > 0 for gt in gts]
@@ -318,7 +319,7 @@ def calculate_dice_scores_gamma_meanfilter_global(imgs, gts):
 
     return dice_scores
 
-def calculate_dice_scores_gamma_local(imgs, gts, r):
+def calculate_dice_scores_gamma_local_package(imgs, gts, radius: int = 15):
     """
     Process all images and corresponding ground truths to compute a list of Dice scores.
 
@@ -340,7 +341,7 @@ def calculate_dice_scores_gamma_local(imgs, gts, r):
         img_gamma = gammacorrection(img, gamma=0.5)
 
         # global otsu thresholding
-        t = local_otsu_package(img_gamma, radius=r)
+        t = local_otsu_package(img_gamma, radius=radius)
         binary1 = (img_gamma > t)
         # calculate dice score
         score = dice_score(binary1.flatten(), gt_bin.flatten())
@@ -348,7 +349,7 @@ def calculate_dice_scores_gamma_local(imgs, gts, r):
 
     return dice_scores
 
-def calculate_dice_scores_gamma_meanfilter_local(imgs, gts, r):
+def calculate_dice_scores_gamma_meanfilter_local_package(imgs, gts, radius: int = 15):
     """
     Process all images and corresponding ground truths to compute a list of Dice scores.
 
@@ -373,7 +374,7 @@ def calculate_dice_scores_gamma_meanfilter_local(imgs, gts, r):
         img_filtered = mean_filter(img_gamma, kernel_size=5)
 
         # global otsu thresholding
-        t = local_otsu_package(img_filtered, radius=r)
+        t = local_otsu_package(img_filtered, radius=radius)
         binary1 = (img_filtered > t)
         # calculate dice score
         score = dice_score(binary1.flatten(), gt_bin.flatten())
