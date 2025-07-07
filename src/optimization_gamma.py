@@ -49,7 +49,7 @@ def calculate_dice_scores_gamma_global(imgs, gts, gamma):
 
     return dice_scores
 
-def evaluate_datasets(datasets, gamma_values, path):
+def evaluate_datasets_gamma(datasets, gamma_values, path):
     """
     Runs evaluation loop over given datasets and gamma sweep,
     combines all mean Dice scores into one 2D array
