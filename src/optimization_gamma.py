@@ -3,7 +3,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Current folder as project_root (3 levels up)
+# Current folder as project_root
 # add project root
 script_dir = os.getcwd()
 project_root = os.path.abspath(script_dir)
