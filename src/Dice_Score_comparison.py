@@ -14,9 +14,6 @@ if project_root not in sys.path:
 
 
 # Import the global Otsu implementation from the project source
-import importlib
-import src.Dice_Score
-importlib.reload(src.Dice_Score)
 from src.Complete_Otsu_Global import otsu_threshold_skimage_like
 from src.Otsu_Local import local_otsu
 from src.Dice_Score import dice_score
@@ -330,7 +327,8 @@ def calculate_dice_scores_gamma_local_package(imgs, gts, radius: int = 15):
     Args:
         imgs (list of np.ndarray): Grayscale input images.
         gts (list of np.ndarray): Corresponding ground-truth masks.
-
+        radius (int): Radius of the local window; the window size is (2*radius + 1) x (2*radius + 1).
+        
     Returns:
         dice_scores (list of float): Dice scores for each image-groundtruth pair.
     """
@@ -360,7 +358,8 @@ def calculate_dice_scores_gamma_meanfilter_local_package(imgs, gts, radius: int 
     Args:
         imgs (list of np.ndarray): Grayscale input images.
         gts (list of np.ndarray): Corresponding ground-truth masks.
-
+        radius (int): Radius of the local window; the window size is (2*radius + 1) x (2*radius + 1).
+        
     Returns:
         dice_scores (list of float): Dice scores for each image-groundtruth pair.
     """

@@ -5,7 +5,7 @@ from skimage.morphology import remove_small_objects
 import sys
 import os
 
-# add project root
+# Add the current folder to the system path so local modules can be imported
 script_dir = os.getcwd()
 project_root = os.path.abspath(script_dir)
 
@@ -14,24 +14,27 @@ if project_root not in sys.path:
 
 from src.Dice_Score import dice_score
 
-
-# ------------------- Multi-Otsu-basierte Maske -------------------
+# ------------------- Multi-Otsu mask using class 1 -------------------
 
 def apply_multiotsu_mask_class1(img):
     """
-    Nutzt Multi-Otsu und weist nur Klasse 1 (zwischen den ersten beiden Schwellen)
-    als Vordergrund zu. Klasse 0 (dunkel) und Klassen >=2 (heller) werden Hintergrund.
+    Applies Multi-Otsu thresholding and uses only class 1 (middle intensity)
+    as foreground. Class 0 (dark) and class 2+ (bright) are treated as background.
     """
     img_u8 = img_as_ubyte(img)
     thresholds = threshold_multiotsu(img_u8, classes=3)
     regions = np.digitize(img_u8, bins=thresholds)
-    
-    # Nur Klasse 1 wird Vordergrund
+
+    # Keep only class 1 as mask
     mask = (regions == 1)
     return mask
 
-# ------------------- Dice-Scores berechnen -------------------
+# ------------------- Calculate Dice scores -------------------
+
 def calculate_multiotsu_dice_scores_class1(imgs, gts):
+    """
+    Calculates Dice scores using the basic Multi-Otsu mask (class 1 only).
+    """
     scores = []
     for img, gt in zip(imgs, gts):
         mask = apply_multiotsu_mask_class1(img)
@@ -39,19 +42,27 @@ def calculate_multiotsu_dice_scores_class1(imgs, gts):
         scores.append(dice_score(mask, gt_binary))
     return scores
 
-
+# ------------------- Multi-Otsu with simple cleaning -------------------
 
 def apply_multiotsu_mask_class1_cleaned(img):
+    """
+    Same as before, but removes very bright pixels (intensity > 230)
+    even if they fall into class 1.
+    """
     img_u8 = img_as_ubyte(img)
     thresholds = threshold_multiotsu(img_u8, classes=3)
     regions = np.digitize(img_u8, bins=thresholds)
     mask = (regions == 1)
 
-    # Entferne sehr helle Pixel (>230), selbst wenn sie in Klasse 1 gelandet sind
+    # Remove bright pixels from the mask
     mask[img_u8 > 230] = 0
     return mask
 
 def calculate_multiotsu_dice_scores_class1_cleaned(imgs, gts):
+    """
+    Calculates Dice scores using cleaned Multi-Otsu masks
+    (class 1 only, very bright pixels removed).
+    """
     scores = []
     for img, gt in zip(imgs, gts):
         mask = apply_multiotsu_mask_class1_cleaned(img)
@@ -59,21 +70,30 @@ def calculate_multiotsu_dice_scores_class1_cleaned(imgs, gts):
         scores.append(dice_score(mask, gt_binary))
     return scores
 
+# ------------------- Multi-Otsu with cleaning + small object removal -------------------
 
 def apply_multiotsu_mask_class1_cleaned_remove(img):
+    """
+    Same as cleaned version, but also removes small objects from the mask
+    (e.g. noise or artifacts smaller than 50 pixels).
+    """
     img_u8 = img_as_ubyte(img)
     thresholds = threshold_multiotsu(img_u8, classes=3)
     regions = np.digitize(img_u8, bins=thresholds)
     mask = (regions == 1)
-    
-    # Entferne sehr helle Pixel (>230)
+
+    # Remove bright pixels
     mask[img_u8 > 230] = 0
 
-    # Optional: Kleine Artefakte entfernen (z.B. unter 50 Pixel)
+    # Remove small objects (noise)
     mask = remove_small_objects(mask, min_size=50)
     return mask
 
 def calculate_multiotsu_dice_scores_class1_cleaned_remove(imgs, gts):
+    """
+    Calculates Dice scores using the cleaned Multi-Otsu mask with small
+    object removal.
+    """
     scores = []
     for img, gt in zip(imgs, gts):
         mask = apply_multiotsu_mask_class1_cleaned_remove(img)
