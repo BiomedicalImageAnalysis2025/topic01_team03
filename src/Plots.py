@@ -15,15 +15,17 @@ def scatterplot_without_regression(
     label_blue="Scores ~ equal"
 ):
     """
-    Vergleicht zwei gleichgroße Vektoren mit Dice-Scores durch Scatterplot + optionale Beschreibung.
-    
-    Zusätzlich werden Dummy-Punkte mit Erklärungen direkt im Plot angezeigt.
+    Displays a scatterplot to visually compare two equally sized score vectors.
+
+    Each point is color-coded based on whether it favors the first, the second,
+    or shows similar values. A diagonal reference line is added, along with a custom
+    legend using embedded markers and labels.
     """
     our_scores = np.array(our_scores)
     package_scores = np.array(package_scores)
     
     if len(our_scores) != len(package_scores):
-        raise ValueError("Beide Vektoren müssen gleich lang sein!")
+        raise ValueError("Both score vectors must be of equal length.")
     
     slope, intercept = np.polyfit(our_scores, package_scores, 1)
     
@@ -60,25 +62,24 @@ def scatterplot_without_regression(
     plt.ylabel(ylabel)
     plt.title(title)
     
-    # Dummy-Punkte und Erklärung unter der Legende:
+    # Add explanatory dummy points for legend
     x_legend = min_val + 0.05 * (max_val - min_val)
-    y_base = min_val - 0.1 * (max_val - min_val)  # Etwas unterhalb des Plots
-    
+    y_base = min_val - 0.1 * (max_val - min_val)
+
     plt.scatter([x_legend], [y_base], color="red", s=50)
     plt.text(x_legend + 0.02, y_base, label_red, va="center", fontsize=10)
-    
+
     plt.scatter([x_legend + 0.2], [y_base], color="green", s=50)
     plt.text(x_legend + 0.22, y_base, label_green, va="center", fontsize=10)
-    
+
     plt.scatter([x_legend + 0.4], [y_base], color="blue", s=50)
     plt.text(x_legend + 0.42, y_base, label_blue, va="center", fontsize=10)
-    
+
     plt.grid(True, linestyle="--", alpha=0.5)
     plt.tight_layout()
     plt.show()
 
 
-# SPAGHETTI PLOT WITH 2 VECTORS
 def plot_pairwise_scores(
     x_positions: Sequence,
     scores1: Sequence,
@@ -91,24 +92,15 @@ def plot_pairwise_scores(
     figsize: tuple[int, int] = (10, 6)
 ):
     """
-    Plot paired scores with connecting lines for comparison.
+    Generates a paired comparison plot for two score vectors.
 
-    Parameters:
-    - x_positions: positions along x-axis (e.g., [0, 1, 2, ...])
-    - scores1: first set of scores (e.g., without mean filter)
-    - scores2: second set of scores (e.g., with mean filter)
-    - labels: tick labels for x-axis (e.g., file names)
-    - file_labels: repeated list of same labels, if needed (optional)
-    - title, xlabel, ylabel: plot text labels
-    - legend_labels: labels shown in legend for the two datasets
-    - figsize: figure size in inches
+    Each data point pair is shown with a connecting line, highlighting
+    differences on a per-sample basis.
     """
-    
     plt.figure(figsize=figsize)
     plt.scatter(x_positions, scores1, color='C0', label=legend_labels[0])
     plt.scatter(x_positions, scores2, color='C1', label=legend_labels[1])
 
-    # Connect each pair of points
     for xi, y1, y2 in zip(x_positions, scores1, scores2):
         plt.plot([xi, xi], [y1, y2], color='gray', alpha=0.5)
 
@@ -121,9 +113,6 @@ def plot_pairwise_scores(
     plt.show()
 
 
-
-
-# SPAGHETTI PLOT WITH 3 VECTORS
 def plot_triplet_scores(
     x_positions: Sequence,
     scores1: Sequence,
@@ -138,14 +127,15 @@ def plot_triplet_scores(
     figsize: Tuple[int, int] = (10, 6)
 ):
     """
-    Plot triplet scores with connecting lines for each file, using different marker shapes.
+    Visualizes three sets of scores using distinct markers and connecting lines per item.
+
+    Useful for direct visual comparison across three methods or configurations.
     """
     plt.figure(figsize=figsize)
     plt.scatter(x_positions, scores1, marker=markers[0], color='C0', label=legend_labels[0])
     plt.scatter(x_positions, scores2, marker=markers[1], color='C1', label=legend_labels[1])
     plt.scatter(x_positions, scores3, marker=markers[2], color='C2', label=legend_labels[2])
 
-    # Draw connecting lines per file
     for xi, y1, y2, y3 in zip(x_positions, scores1, scores2, scores3):
         plt.plot([xi, xi, xi], [y1, y2, y3], color='gray', alpha=0.5)
 
@@ -158,7 +148,6 @@ def plot_triplet_scores(
     plt.show()
 
 
-# SPAGHETTI PLOT WITH 4 VECTORS
 def plot_quadruplet_scores(
     x_positions: Sequence,
     scores1: Sequence,
@@ -174,16 +163,9 @@ def plot_quadruplet_scores(
     figsize: Tuple[int, int] = (10, 6)
 ):
     """
-    Plot quadruplet scores with connecting lines for each file, using different marker shapes.
+    Displays four sets of scores with distinct markers and connecting lines.
 
-    Parameters:
-    - x_positions: x-axis positions (e.g. [0, 1, 2, ...])
-    - scores1..scores4: Dice scores for methods 1–4
-    - labels: Labels for x-ticks (usually file names)
-    - title, xlabel, ylabel: Titles for plot and axes
-    - legend_labels: Tuple with labels for the four methods
-    - markers: Tuple with marker shapes for the four methods
-    - figsize: Size of figure in inches
+    Facilitates direct sample-wise comparison across four different methods.
     """
     plt.figure(figsize=figsize)
     plt.scatter(x_positions, scores1, marker=markers[0], color='C0', label=legend_labels[0])
@@ -191,7 +173,6 @@ def plot_quadruplet_scores(
     plt.scatter(x_positions, scores3, marker=markers[0], color='C1', label=legend_labels[2])
     plt.scatter(x_positions, scores4, marker=markers[2], color='C1', label=legend_labels[3])
 
-    # Draw connecting lines per file
     for xi, y1, y2, y3, y4 in zip(x_positions, scores1, scores2, scores3, scores4):
         plt.plot([xi]*4, [y1, y2, y3, y4], color='gray', alpha=0.5)
 
@@ -204,16 +185,11 @@ def plot_quadruplet_scores(
     plt.show()
 
 
-# GRAY VALUE HISTOGRAM
-
 def plot_gray_histogram(image: np.ndarray, bins: int = 256, title: str = "Gray Value Histogram") -> None:
     """
-    Plots the histogram of a grayscale image.
+    Displays a grayscale histogram for a 2D image.
 
-    Parameters:
-        image (np.ndarray): 2D array representing a grayscale image.
-        bins (int): Number of bins in the histogram (default: 256).
-        title (str): Title for the histogram plot.
+    The histogram shows the distribution of pixel intensities across the entire image.
     """
     if image.ndim != 2:
         raise ValueError("Input must be a 2D grayscale image.")
@@ -228,29 +204,22 @@ def plot_gray_histogram(image: np.ndarray, bins: int = 256, title: str = "Gray V
     plt.show()
 
 
-
 def plot_single_grouped_boxplot(df, title, ylabel, palette="pastel", figsize=(8,6), save_path=None):
     """
-    Erstellt einen einzelnen Boxplot, der die Werte nach 'Dataset' gruppiert.
+    Creates a grouped boxplot for multiple datasets, showing individual points overlaid.
 
-    Args:
-        df (pd.DataFrame): DataFrame mit den Spalten 'Dataset' und 'Value'.
-        title (str): Titel des Plots.
-        ylabel (str): Beschriftung der y-Achse.
-        palette (str, optional): Farbschema für Boxplots. Default: "pastel".
-        figsize (tuple, optional): Größe der Figure. Default: (8,6).
-        save_path (str, optional): Falls angegeben, wird der Plot als Bilddatei gespeichert.
+    Useful for visualizing score distributions across different conditions or datasets.
     """
     plt.figure(figsize=figsize)
 
     sns.boxplot(
         x="Dataset",
         y="Value",
-        hue="Dataset",          
+        hue="Dataset",
         data=df,
         palette=palette,
         showfliers=True,
-        legend=False            
+        legend=False
     )
     sns.stripplot(
         x="Dataset",
@@ -269,26 +238,20 @@ def plot_single_grouped_boxplot(df, title, ylabel, palette="pastel", figsize=(8,
 
     if save_path:
         plt.savefig(save_path, dpi=300)
-        print(f"Plot gespeichert unter: {save_path}")
+        print(f"Saved plot to: {save_path}")
     else:
         plt.show()
 
 
-
 def combine_results_to_dataframe(names, lists):
     """
-    Kombiniert mehrere Ergebnislisten in einen einzigen DataFrame
-    mit den Spalten 'Dataset' und 'Value'.
+    Combines multiple result lists into a single DataFrame for grouped analysis or plotting.
 
-    Args:
-        names (list of str): Namen der Datasets, z.B. ["GOWT1", "HeLa", "NIH3T3"].
-        lists (list of list of float): Ergebnislisten, z.B. [[...], [...], [...]].
-
-    Returns:
-        pd.DataFrame: Gesamter DataFrame mit allen Werten.
+    Each value is assigned a dataset label, resulting in a long-form table with two columns:
+    'Dataset' and 'Value'.
     """
     if len(names) != len(lists):
-        raise ValueError("Die Länge von names und lists muss übereinstimmen!")
+        raise ValueError("Lengths of 'names' and 'lists' must match.")
 
     dfs = []
     for name, values in zip(names, lists):
