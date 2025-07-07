@@ -204,3 +204,12 @@ Was unable to contribute during the final phase of the project due to health rea
 Use of AI Tools
 
 AI tools were used throughout the entire project for code generation, optimization, and background research.  Specifically, OpenAI’s models ChatGPT-4o, ChatGPT-o3, ChatGPT-o4-mini, and ChatGPT-o4-mini-high were utilized to support development. All AI-assisted contributions were critically reviewed: we read, checked, and understood the generated code and explanations, and validated the approaches.
+
+---
+
+## Sources
+
+- Otsu, N. (1979). A Threshold Selection Method from Gray-Level Histograms. IEEE Transactions on Systems, Man, and Cybernetics, SMC-9(1), 62–66.  
+- Saddami, K., Munadi, K., Away, Y., & Arnia, F. (2019). Improvement of Binarization Performance using Local Otsu Thresholding. International Journal of Electrical and Computer Engineering (IJECE), 9(1), 264–272.
+- Win, K. Y., Choomchuay, S., Hamamoto, K., & Raveesunthornkiat, M. (2018). Comparative Study on Automated Cell Nuclei Segmentation Methods for Cytology Pleural Effusion Images. Journal of Healthcare Engineering, 2018, Article ID 9240389.
+- Erwin. (2020). Improving Retinal Image Quality Using the Contrast Stretching, Histogram Equalization, and CLAHE Methods with Median Filters. International Journal of Image, Graphics and Signal Processing, 12(2), 30–41.
