@@ -1,4 +1,5 @@
 # topic01_team03
+# Segmentation of Cell Nuclei Using Otsu Thresholding
 
 This repository contains all code, documentation, and resources for Topic 01 of the 2025 Data Analysis Project: Biomedical Image Analysis (Team 03). Below you will find an overview of the project, how this repository is organized, and instructions for setup, data downloads, and recommended workflows.
 
@@ -36,18 +37,18 @@ Throughout the project, each team member focused on specific components of the i
 	•	Marius Mander 
   worked on pre-processing methods, including gamma correction, histogram equalization, mean filtering, and Wiener filter–based background removal.
 
-	•	Victor Enning De Souza 
+	•	Victor De Souza Enning 
   implemented the global Otsu thresholding algorithm. He also created the src folder structure for organizing all functions and wrote the import logic so that the modules could be loaded as packages into other parts of the project.
 
-	•	Leo Müller de Ahne 
+	•	Leo Müller-de Ahne 
   focused on the implementation of the local Otsu thresholding method.
 
-	•	Miguel Gonzales Ries 
+	•	Miguel Gonzalez Ries 
   developed the Dice Score evaluation module and implemented multi-Otsu thresholding.
 
 Final Phase Contributions
 
-	•	Miguel Gonzales Ries
+	•	Miguel Gonzalez Ries
 Took the lead on structuring the final Jupyter Notebook, integrating most components into a clear and coherent workflow.
 He also created several plots for the final poster.
 
@@ -55,10 +56,10 @@ He also created several plots for the final poster.
 Focused on implementing the Jupyter Notebook section covering pre-processing methods.
 Additionally contributed to plotting a few visualizations.
 
-	•	Leo Müller de Ahne
+	•	Leo Müller-de Ahne
 Took the lead on poster layout and design, as well as crafting the accompanying texts.
 
-	•	Victor Enning De Souza
+	•	Victor De Souza Enning 
 Was unable to contribute during the final phase of the project due to health reasons.
 
 Use of AI Tools
@@ -70,11 +71,8 @@ AI tools were used throughout the entire project for code generation, optimizati
 
 ## Repository Structure
 
-```text
 topic01_team03/
-├── .gitignore
-├── README.md
-├── data/
+├── data-git/
 │   ├── N2DH-GOWT1/
 │   │   ├── gt/
 │   │   └── img/
@@ -83,15 +81,35 @@ topic01_team03/
 │   │   └── img/
 │   └── NIH3T3/
 │       ├── gt/
-│       └── img/              
+│       └── img/
+├── output/
+│   ├── all_dice_scores_wienerfilter.npy
+│   ├── best_radius_our_package.csv
+│   ├── dice_all_gowt1_local.npy
+│   ├── dice_all_hela_local.npy
+│   ├── dice_all_local.npy
+│   ├── dice_all_nih_local.npy
+│   └── img_gowt1_otsu_local.npy
 ├── src/
 │   ├── __init__.py
-│   ├── gray_hist.py
-│   └── otsu_global.py
-├── bimodality_enhancement.ipynb
-└── otsu_global_clean-ipynb
-```
-
+│   ├── Complete_Otsu_Global.py
+│   ├── Dice_Score_comparison.py
+│   ├── Dice_Score.py
+│   ├── find_image.py
+│   ├── imread_all.py
+│   ├── multi.py
+│   ├── optimization_gamma.py
+│   ├── optimization_meanfilter.py
+│   ├── optimization_wienerfilter.py
+│   ├── Otsu_Local.py
+│   ├── Plots.py
+│   ├── pre_processing.py
+│   ├── radius_calculation.py
+│   ├── Scaling.py
+│   └── show_imgs.py
+├── .gitignore│   
+├── README.md
+├── main.ipynb
 ---
 
 ## Prerequisites & Dependencies
