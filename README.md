@@ -94,7 +94,7 @@ These libraries are included with Python and do not require installation:
 
 ---
 
-## 3. **Third-Party Python Packages**
+3. **Third-Party Python Packages**
 
 Below is a list of required external libraries, including usage and installation instructions:
 
