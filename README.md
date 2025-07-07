@@ -154,3 +154,33 @@ Before running any of the scripts or notebooks that rely on the imports shown ab
         ```bash
         pip install scikit-image
         ```
+
+## Prerequisites & Dependencies
+
+Before running any of the scripts or notebooks in this repository, please ensure that the following software and Python packages are installed.
+
+1. **Python Version**
+   - Python 3.8 or newer
+
+---
+
+2. **Core Python Libraries (Built-in)**
+
+These libraries are included with Python and do not require installation:
+
+   - `os` – for file and directory operations  
+   - `sys` – for system path manipulation  
+   - `pathlib` – for object-oriented filesystem paths (`Path`)  
+   - `typing` – for static type annotations (`List`, `Tuple`, etc.)
+
+---
+
+3. **Third-Party Python Packages**
+
+Below is a list of required external libraries, including usage and installation instructions:
+
+   **NumPy (`numpy`)**
+     - Provides support for numerical arrays and mathematical operations.
+     - Used throughout for image data, masks, and statistical analysis.
+    ```bash
+    pip install numpy
