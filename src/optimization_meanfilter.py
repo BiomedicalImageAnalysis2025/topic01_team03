@@ -57,7 +57,7 @@ def calculate_dice_scores_meanfilter_global(imgs, gts, s):
 
 # Generic evaluation across datasets and window sizes
 def evaluate_datasets_mean_filter(
-    datasets, window_sizes: np.ndarray, output_dir: Path = Path('Dice_scores')
+    datasets, window_sizes: np.ndarray, output_dir: Path = Path('Dice_scores'), project_root=None
 ) -> dict:
     """
     Runs evaluation for multiple datasets and window sizes,
