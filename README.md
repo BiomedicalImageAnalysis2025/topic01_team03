@@ -37,11 +37,11 @@ Throughout the project, each team member focused on specific components of the i
   worked on pre-processing methods, including gamma correction, histogram equalization, mean filtering, and Wiener filter–based background removal.
 
 	•	Victor Enning De Souza 
-  implemented the global Otsu thresholding algorithm.
+  implemented the global Otsu thresholding algorithm. He also created the src folder structure for organizing all functions and wrote the import logic so that the modules could be loaded as packages into other parts of the project.
 
 	•	Leo Müller de Ahne 
   focused on the implementation of the local Otsu thresholding method.
-  
+
 	•	Miguel Gonzales Ries 
   developed the Dice Score evaluation module and implemented multi-Otsu thresholding.
 
@@ -63,7 +63,7 @@ Was unable to contribute during the final phase of the project due to health rea
 
 Use of AI Tools
 
-AI tools were used throughout the entire project for code generation, optimization, and background research. Specifically, OpenAI’s models ChatGPT-4o, ChatGPT-o3, ChatGPT-o4-mini, and ChatGPT-o4-mini-high were utilized extensively to support development.
+AI tools were used throughout the entire project for code generation, optimization, and background research.  Specifically, OpenAI’s models ChatGPT-4o, ChatGPT-o3, ChatGPT-o4-mini, and ChatGPT-o4-mini-high were utilized to support development. All AI-assisted contributions were critically reviewed: we read, checked, and understood the generated code and explanations, and validated the approaches against scientific literature and official library documentation before incorporating them into the project.
 
 
 ---
