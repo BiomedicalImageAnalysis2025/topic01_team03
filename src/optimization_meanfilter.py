@@ -57,7 +57,7 @@ def calculate_dice_scores_meanfilter_global(imgs, gts, s):
 
 # Generic evaluation across datasets and window sizes
 def evaluate_datasets_mean_filter(
-    datasets, window_sizes: np.ndarray, output_dir: Path = Path('Dice_scores')
+    datasets, window_sizes: np.ndarray, output_dir: Path = Path('Dice_scores'), project_root=None
 ) -> dict:
     """
     Runs evaluation for multiple datasets and window sizes,
@@ -110,3 +110,46 @@ def find_best_window(all_means: np.ndarray,
     best_window = window_sizes[best_idx]
     best_score = float(mean_across[best_idx])
     return best_window, best_score
+
+import matplotlib.pyplot as plt
+from typing import Sequence
+
+def plot_all_datasets_means(
+    all_means: np.ndarray,
+    param_values: Sequence[float],
+    dataset_names: Sequence[str],
+    xlabel: str = "Parameter",
+    ylabel: str = "Mean Dice Score",
+    title: str = "Mean Dice vs. Parameter",
+    figsize: tuple[int, int] = (10, 6)
+) -> None:
+    """
+    Plot each column of a 2D mean-Dice array as a separate curve.
+
+    Args:
+        all_means: 2D array of shape (len(param_values), len(dataset_names))
+        param_values: 1D sequence of parameter values (rows of all_means)
+        dataset_names: list of names, one per column in all_means
+        xlabel: label for the x-axis
+        ylabel: label for the y-axis
+        title: plot title
+        figsize: figure size in inches
+    """
+    plt.figure(figsize=figsize)
+    n_datasets = all_means.shape[1]
+    for idx in range(n_datasets):
+        plt.plot(
+            param_values,
+            all_means[:, idx],
+            marker='o',
+            linestyle='-',
+            label=dataset_names[idx]
+        )
+
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title)
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
