@@ -107,7 +107,7 @@ topic01_team03/
 │   ├── radius_calculation.py
 │   ├── Scaling.py
 │   └── show_imgs.py
-├── .gitignore│   
+├── .gitignore   
 ├── README.md
 ├── main.ipynb
 ---
