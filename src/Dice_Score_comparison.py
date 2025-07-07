@@ -91,10 +91,10 @@ def calculate_dice_scores_local_package(imgs, gts, radius: int = 15):
     """
     
     # scale to 8bit
-    img = ((img-np.min(img))/(np.max(img)-np.min(img)) * 255).astype(np.uint8)
+    imgs2 = [((img-np.min(img))/(np.max(img)-np.min(img)) * 255).astype(np.uint8) for img in imgs]
     
     # Apply local Otsu thresholding
-    otsu_imgs = [img > local_otsu_package(img, radius = radius) for img in imgs]
+    otsu_imgs = [img > local_otsu_package(img, radius = radius) for img in imgs2]
     
     # Convert ground-truth masks to binary
     gt_binaries = [gt > 0 for gt in gts]
