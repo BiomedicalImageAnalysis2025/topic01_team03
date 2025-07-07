@@ -63,7 +63,7 @@ Was unable to contribute during the final phase of the project due to health rea
 
 Use of AI Tools
 
-AI tools were used throughout the entire project for code generation, optimization, and background research.  Specifically, OpenAI’s models ChatGPT-4o, ChatGPT-o3, ChatGPT-o4-mini, and ChatGPT-o4-mini-high were utilized to support development. All AI-assisted contributions were critically reviewed: we read, checked, and understood the generated code and explanations, and validated the approaches against scientific literature and official library documentation before incorporating them into the project.
+AI tools were used throughout the entire project for code generation, optimization, and background research.  Specifically, OpenAI’s models ChatGPT-4o, ChatGPT-o3, ChatGPT-o4-mini, and ChatGPT-o4-mini-high were utilized to support development. All AI-assisted contributions were critically reviewed: we read, checked, and understood the generated code and explanations, and validated the approaches.
 
 
 ---

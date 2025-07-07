@@ -373,6 +373,9 @@ def calculate_dice_scores_gamma_meanfilter_local_package(imgs, gts, radius: int 
         # meanfilter
         img_filtered = mean_filter(img_gamma, kernel_size=5)
 
+        # scale to 8bit
+        img_filtered = ((img_filtered-np.min(img_filtered))/(np.max(img_filtered)-np.min(img_filtered)) * 255).astype(np.uint8)
+
         # global otsu thresholding
         t = local_otsu_package(img_filtered, radius=radius)
         binary1 = (img_filtered > t)
