@@ -7,8 +7,9 @@ This repository contains all code, documentation, and resources for Topic 01 of 
 ## Table of Contents
 
 1. [Project Overview](#project-overview)  
-2. [Repository Structure](#repository-structure)  
-3. [Prerequisites & Dependencies](#prerequisites--dependencies)  
+2. [Distributin Of Tasks And Use Of AI](#distribution-of-tasks-and-use-of-ai)
+3. [Repository Structure](#repository-structure)  
+4. [Prerequisites & Dependencies](#prerequisites--dependencies)  
 
 
 ---
@@ -25,6 +26,45 @@ Team 03 focuses on designing and implementing a robust pipeline for segmenting b
 For a detailed description of the overall course and context, refer to:
 - [2025 Data Analysis Topic 01: Biomedical Image Analysis (GitHub)](https://github.com/maiwen-ch/2025_Data_Analysis_Topic_01_Biomedical_Image_Analysis)  
 - [2025 Data Analysis Project (General Info)](https://github.com/maiwen-ch/2025_Data_Analysis_Project)  
+
+---
+
+## Distribution Of Tasks And Use Of AI
+
+Throughout the project, each team member focused on specific components of the image segmentation pipeline:
+
+	•	Marius Mander 
+  worked on pre-processing methods, including gamma correction, histogram equalization, mean filtering, and Wiener filter–based background removal.
+
+	•	Victor Enning De Souza 
+  implemented the global Otsu thresholding algorithm.
+
+	•	Leo Müller de Ahne 
+  focused on the implementation of the local Otsu thresholding method.
+  
+	•	Miguel Gonzales Ries 
+  developed the Dice Score evaluation module and implemented multi-Otsu thresholding.
+
+Final Phase Contributions
+
+	•	Miguel Gonzales Ries
+Took the lead on structuring the final Jupyter Notebook, integrating most components into a clear and coherent workflow.
+He also created several plots for the final poster.
+
+	•	Marius Mander
+Focused on implementing the Jupyter Notebook section covering pre-processing methods.
+Additionally contributed to plotting a few visualizations.
+
+	•	Leo Müller de Ahne
+Took the lead on poster layout and design, as well as crafting the accompanying texts.
+
+	•	Victor Enning De Souza
+Was unable to contribute during the final phase of the project due to health reasons.
+
+Use of AI Tools
+
+AI tools were used throughout the entire project for code generation, optimization, and background research. Specifically, OpenAI’s models ChatGPT-4o, ChatGPT-o3, ChatGPT-o4-mini, and ChatGPT-o4-mini-high were utilized extensively to support development.
+
 
 ---
 
