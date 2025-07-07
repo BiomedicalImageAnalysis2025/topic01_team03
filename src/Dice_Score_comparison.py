@@ -91,7 +91,7 @@ def calculate_dice_scores_local_package(imgs, gts, radius: int = 15):
     """
     
     # scale to 8bit
-    img_filtered = ((img_filtered-np.min(img_filtered))/(np.max(img_filtered)-np.min(img_filtered)) * 255).astype(np.uint8)
+    img = ((img-np.min(img))/(np.max(img)-np.min(img)) * 255).astype(np.uint8)
     
     # Apply local Otsu thresholding
     otsu_imgs = [img > local_otsu_package(img, radius = radius) for img in imgs]
