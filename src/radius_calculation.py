@@ -4,7 +4,7 @@ from tqdm import tqdm
 import pandas as pd
 import sys
 
-# Add the current working directory to the Python path to enable local imports
+# add project root
 script_dir = os.getcwd()
 project_root = os.path.abspath(script_dir)
 
@@ -20,22 +20,19 @@ def find_best_radius_for_datasets_package(
     save_csv_path=None
 ):
     """
-    Determines the optimal radius for local Otsu thresholding across multiple datasets.
+    Berechnet für alle Bilder der angegebenen Datensätze den besten lokalen Otsu-Radius.
 
-    For each image in the selected datasets, all specified radii are evaluated, and the one 
-    yielding the highest Dice score is recorded. Optionally, results can be saved to a CSV file.
-
-    Parameters:
-        datasets (list of tuples): Optional list of (dataset_name, loader_function).
-                                   If None, predefined datasets will be used.
-        radii (list of int): List of radius values to evaluate. Defaults to odd values up to 49.
-        save_csv_path (str): Optional path to save the results as a CSV file.
+    Args:
+        datasets (list of tuples, optional): Liste von (dataset_name, loader_funktion).
+            Wenn None, werden NIH3T3, N2DH-GOWT1, N2DL-HeLa geladen.
+        radii (list of int, optional): Liste der zu testenden Radien. Defaults to [1,3,...,49].
+        save_csv_path (str, optional): Falls angegeben, wird eine CSV mit den Ergebnissen gespeichert.
 
     Returns:
-        List of dictionaries containing the best radius and corresponding Dice score for each image.
+        list of dict: Liste mit Ergebnissen für alle Bilder (Dataset, Image, BestRadius, BestDice).
     """
     if radii is None:
-        radii = list(range(1, 3, 2))  # Default: [1]
+        radii = list(range(1, 3, 2))
 
     if datasets is None:
         from src.imread_all import load_n2dh_gowt1_images, load_n2dl_hela_images, load_nih3t3_images
@@ -61,7 +58,7 @@ def find_best_radius_for_datasets_package(
                     mask = img > local_thresh
                     dice = dice_score(mask, gt)
                 except Exception as e:
-                    print(f"[WARN] Error processing image {img_path} with radius {r}: {e}")
+                    print(f"[WARN] Fehler bei Bild {img_path} mit Radius {r}: {e}")
                     continue
 
                 if dice > best_dice:
@@ -75,40 +72,38 @@ def find_best_radius_for_datasets_package(
                 "BestDice": best_dice
             })
 
-    # Display results in console
+    # Ergebnisse ausgeben
     for result in all_results:
-        print(f"{result['Dataset']}/{result['Image']}: best radius = {result['BestRadius']}, Dice = {result['BestDice']:.4f}")
+        print(f"{result['Dataset']}/{result['Image']}: bester Radius = {result['BestRadius']}, Dice={result['BestDice']:.4f}")
 
-    # Optionally export results to CSV
+    # Optional speichern
     if save_csv_path:
         df = pd.DataFrame(all_results)
         df.to_csv(save_csv_path, index=False)
-        print(f"\nResults saved to {save_csv_path}")
+        print(f"\nErgebnisse gespeichert in {save_csv_path}")
 
     return all_results
 
+import numpy as np
+from tqdm import tqdm
 
 def calculate_best_radii_and_dice1(imgs, gts, radii):
     """
-    Identifies the optimal radius per image by computing Dice scores 
-    over all specified radii and selecting the best-performing one.
+    Für jedes Bild: teste alle angegebenen Radien und bestimme den besten Dice-Score samt Radius.
 
-    Parameters:
-        imgs (list of np.ndarray): Input images.
-        gts (list of np.ndarray): Corresponding ground truth masks.
-        radii (list of int): Radius values to evaluate.
+    Args:
+        imgs (list of np.ndarray): Liste von Input-Bildern.
+        gts (list of np.ndarray): Liste der Ground-Truth-Bilder.
+        radii (list of int): Liste der zu testenden Radien.
 
     Returns:
-        Tuple containing two lists:
-            - Best radius per image.
-            - Corresponding best Dice score.
+        list of dict: Pro Bild ein Dict mit 'BestRadius' und 'BestDice'.
     """
     from src.Dice_Score import dice_score
     from src.Otsu_Local import local_otsu_package
 
     results_dice = []
     results_radius = []
-
     for img, gt in tqdm(zip(imgs, gts), total=len(imgs), desc="Processing images"):
         best_dice = -1
         best_radius = None
@@ -119,7 +114,7 @@ def calculate_best_radii_and_dice1(imgs, gts, radii):
                 mask = img > local_thresh
                 dice = dice_score(mask, gt)
             except Exception as e:
-                print(f"[WARN] Error with radius {r}: {e}")
+                print(f"[WARN] Fehler bei Radius {r}: {e}")
                 continue
 
             if dice > best_dice:
@@ -127,25 +122,17 @@ def calculate_best_radii_and_dice1(imgs, gts, radii):
                 best_radius = r
 
         results_dice.append(best_dice)
+
         results_radius.append(best_radius)
 
     return results_radius, results_dice
 
-
 def print_clean_results(all_results, all_image_paths): 
-    """
-    Organizes radius and Dice score results into a structured dictionary per dataset.
 
-    Parameters:
-        all_results (list of tuples): Each tuple contains best radii and scores per dataset.
-        all_image_paths (list): Corresponding file paths for all images.
-
-    Returns:
-        Dictionary grouping results by dataset, with tuples of (filename, best radius, Dice score).
-    """
     from src.imread_all import load_n2dh_gowt1_images, load_n2dl_hela_images, load_nih3t3_images
 
     dataset_name = ["N2DH-GOWT1", "N2DL-HeLa", "NIH3T3"]
+
     cleanresult = {}
 
     for dataset, (rad, di), img in zip(dataset_name, all_results, all_image_paths):
@@ -153,4 +140,4 @@ def print_clean_results(all_results, all_image_paths):
             filename = os.path.basename(name)
             cleanresult.setdefault(dataset, []).append((filename, radius, dice))
 
-    return cleanresult
+    return cleanresult 

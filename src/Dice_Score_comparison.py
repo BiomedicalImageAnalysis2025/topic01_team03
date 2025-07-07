@@ -14,6 +14,9 @@ if project_root not in sys.path:
 
 
 # Import the global Otsu implementation from the project source
+import importlib
+import src.Dice_Score
+importlib.reload(src.Dice_Score)
 from src.Complete_Otsu_Global import otsu_threshold_skimage_like
 from src.Otsu_Local import local_otsu
 from src.Dice_Score import dice_score
@@ -89,12 +92,8 @@ def calculate_dice_scores_local_package(imgs, gts, radius: int = 15):
     Returns:
         list[float]: Dice scores for each image/ground-truth pair.
     """
-    
-    # scale to 8bit
-    imgs2 = [((img-np.min(img))/(np.max(img)-np.min(img)) * 255).astype(np.uint8) for img in imgs]
-    
     # Apply local Otsu thresholding
-    otsu_imgs = [img > local_otsu_package(img, radius = radius) for img in imgs2]
+    otsu_imgs = [img > local_otsu_package(img, radius = radius) for img in imgs]
     
     # Convert ground-truth masks to binary
     gt_binaries = [gt > 0 for gt in gts]
@@ -327,8 +326,7 @@ def calculate_dice_scores_gamma_local_package(imgs, gts, radius: int = 15):
     Args:
         imgs (list of np.ndarray): Grayscale input images.
         gts (list of np.ndarray): Corresponding ground-truth masks.
-        radius (int): Radius of the local window; the window size is (2*radius + 1) x (2*radius + 1).
-        
+
     Returns:
         dice_scores (list of float): Dice scores for each image-groundtruth pair.
     """
@@ -358,8 +356,7 @@ def calculate_dice_scores_gamma_meanfilter_local_package(imgs, gts, radius: int 
     Args:
         imgs (list of np.ndarray): Grayscale input images.
         gts (list of np.ndarray): Corresponding ground-truth masks.
-        radius (int): Radius of the local window; the window size is (2*radius + 1) x (2*radius + 1).
-        
+
     Returns:
         dice_scores (list of float): Dice scores for each image-groundtruth pair.
     """
@@ -375,9 +372,6 @@ def calculate_dice_scores_gamma_meanfilter_local_package(imgs, gts, radius: int 
 
         # meanfilter
         img_filtered = mean_filter(img_gamma, kernel_size=5)
-
-        # scale to 8bit
-        img_filtered = ((img_filtered-np.min(img_filtered))/(np.max(img_filtered)-np.min(img_filtered)) * 255).astype(np.uint8)
 
         # global otsu thresholding
         t = local_otsu_package(img_filtered, radius=radius)
