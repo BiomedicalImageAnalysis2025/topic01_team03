@@ -70,7 +70,7 @@ AI tools were used throughout the entire project for code generation, optimizati
 ---
 
 ## Repository Structure
-
+```
 topic01_team03/
 ├── data-git/
 │   ├── N2DH-GOWT1/
@@ -110,6 +110,7 @@ topic01_team03/
 ├── .gitignore   
 ├── README.md
 ├── main.ipynb
+```
 ---
 
 ## Prerequisites & Dependencies
